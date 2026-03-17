@@ -54,7 +54,7 @@ if err := cl.Connect(); err != nil {
 
 #### Create writer to make API requests
 ```go
-writer, err := client.NewSender(cl)      // Pass TWSClient after successfully establishing connection
+writer, err := client.NewSender(cl)     // Pass TWSClient after successfully establishing connection
 if err != nil {
         panic(err)
 }
