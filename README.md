@@ -17,7 +17,7 @@ Trader Workstation:
 * Download and install `Trader Workstation 10.44.1` (or higher)
 * Follow [instructions](https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#tws-config-api) to enable API use
 
-**Disclaimer**: This project has only been tested against Trader Workstation 10.44.1, **older versions will likely not work**.
+**NOTE**: This project has only been tested against Trader Workstation 10.44.1
 
 ## Overview
 
@@ -37,9 +37,9 @@ Let's walk through making our first API request.
 
 ```go
 conf := client.TWSConfig{
-        ClientID:     0,                // client id of connection
+        ClientID:     0,                // Client id of connection
         Host:         "localhost",
-        Port:         "7497",           // paper trading port
+        Port:         "7497",           // Default paper trading port
         ReadTimeout:  5 * time.Second,
         WriteTimeout: 5 * time.Second,
 }
@@ -54,7 +54,7 @@ if err := cl.Connect(); err != nil {
 
 #### Create writer to make API requests
 ```go
-writer, err := client.NewSender(cl)     // Pass TWSClient after successfully establishing connection
+writer, err := client.NewSender(cl)     // Pass TWSClient after establishing connection
 if err != nil {
         panic(err)
 }
@@ -89,7 +89,7 @@ go func() {
 #### Call TWS API for `AccountSummary` data
 https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#requesting-account-summary
 ```go
-// Most requests require a unique id
+// API requests require a unique id
 // TWSClient provides a function to get the next valid id
 reqId := cl.GetNextReqId()
 
