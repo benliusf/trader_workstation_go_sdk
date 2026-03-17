@@ -8,6 +8,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+// This example handler implements the EHandler interface from handler.go
+// and merely prints every api message onto stdout.
+
 type ExampleHandler struct {
 	logger log.Logger
 }

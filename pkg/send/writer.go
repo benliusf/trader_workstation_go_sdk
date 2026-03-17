@@ -15,22 +15,23 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 	var msgId int32
 	switch t := m.(type) {
 	case *api.StartApiRequest:
-		msgId = START_API + PROTOBUF_MSG_ID
+		msgId = START_API
 	case *api.IdsRequest:
-		msgId = REQ_IDS + PROTOBUF_MSG_ID
+		msgId = REQ_IDS
 	case *api.AccountSummaryRequest:
-		msgId = REQ_ACCOUNT_SUMMARY + PROTOBUF_MSG_ID
+		msgId = REQ_ACCOUNT_SUMMARY
 	case *api.ContractDataRequest:
-		msgId = REQ_CONTRACT_DATA + PROTOBUF_MSG_ID
+		msgId = REQ_CONTRACT_DATA
 	case *api.MarketDataTypeRequest:
-		msgId = REQ_MARKET_DATA_TYPE + PROTOBUF_MSG_ID
+		msgId = REQ_MARKET_DATA_TYPE
 	case *api.MarketDataRequest:
-		msgId = REQ_MKT_DATA + PROTOBUF_MSG_ID
+		msgId = REQ_MKT_DATA
 	case *api.HistoricalDataRequest:
-		msgId = REQ_HISTORICAL_DATA + PROTOBUF_MSG_ID
+		msgId = REQ_HISTORICAL_DATA
 	default:
 		return fmt.Errorf("'%T' is not implemented", t)
 	}
+	msgId += PROTOBUF_MSG_ID
 	msgBytes, err := proto.Marshal(m)
 	if err != nil {
 		return err

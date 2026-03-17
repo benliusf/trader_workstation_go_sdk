@@ -10,11 +10,17 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 )
 
+// An example to demonstrate a API call to Account Summary -
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#sync-account-summary
+//
+// Every write request needs a unique reqId. The code below calls cl.GetNextReqId()
+// to get the next reqId before making the API call.
+
 func main() {
 	conf := client.TWSConfig{
 		ClientID:     0,
 		Host:         "localhost",
-		Port:         "7496",
+		Port:         "7497",
 		ReadTimeout:  2 * time.Second,
 		WriteTimeout: 2 * time.Second,
 	}
@@ -49,7 +55,10 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
+	// Use the TWSClient to get the next valid request id which is used to send write requests.
 	reqId := cl.GetNextReqId()
+
+	// Create new request using the reqId.
 	accountSummary := client.NewAccountSummaryRequest(writer, reqId, "", "")
 	for {
 		if err := accountSummary.Send(ctx); err != nil {

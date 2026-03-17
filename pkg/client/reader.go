@@ -12,6 +12,13 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+var deserialize func(m protoreflect.ProtoMessage, b []byte) error = func(m protoreflect.ProtoMessage, b []byte) error {
+	if err := proto.Unmarshal(b, m); err != nil {
+		return err
+	}
+	return nil
+}
+
 type EReader struct {
 	twsClient *TWSClient
 	logger    log.Logger
@@ -46,12 +53,6 @@ func (e *EReader) Read(ctx context.Context, handler EHandler) error {
 }
 
 func (e *EReader) Process(msg *read.Message, handler EHandler) error {
-	var deserialize func(m protoreflect.ProtoMessage, b []byte) error = func(m protoreflect.ProtoMessage, b []byte) error {
-		if err := proto.Unmarshal(b, m); err != nil {
-			return err
-		}
-		return nil
-	}
 	id, err := msg.ReadMsgId()
 	if err != nil {
 		return err
@@ -62,64 +63,100 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 	}
 	switch id {
 	case read.NEXT_VALID_ID:
-		m := &api.NextValidId{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		e.twsClient.status.setNextValidId(*m.OrderId)
-		if !e.twsClient.status.isReady() {
-			e.twsClient.status.setReady()
-		}
-		return handler.NextValidId(m)
+		return e.handleNextValidId(b, handler)
 	case read.ACCOUNT_SUMMARY:
-		m := &api.AccountSummary{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.AccountSummary(m)
+		return e.handleAccountSummary(b, handler)
 	case read.CONTRACT_DATA:
-		m := &api.ContractData{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.ContractData(m)
+		return e.handleContractData(b, handler)
 	case read.TICK_PRICE:
-		m := &api.TickPrice{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.TickPrice(m)
+		return e.handleTickPrice(b, handler)
 	case read.TICK_SIZE:
-		m := &api.TickSize{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.TickSize(m)
+		return e.handleTickSize(b, handler)
 	case read.TICK_STRING:
-		m := &api.TickString{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.TickString(m)
+		return e.handleTickString(b, handler)
 	case read.HISTORICAL_DATA:
-		m := &api.HistoricalData{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.HistoricalData(m)
+		return e.handleHistoricalData(b, handler)
 	case read.HISTORICAL_DATA_END:
-		m := &api.HistoricalDataEnd{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.HistoricalDataEnd(m)
+		return e.handleHistoricalDataEnd(b, handler)
 	case read.ERR_MSG:
-		m := &api.ErrorMessage{}
-		if err := deserialize(m, b); err != nil {
-			return err
-		}
-		return handler.ErrorMessage(m)
+		return e.handleErrorMessage(b, handler)
 	default:
 		return handler.Unsupported(msg)
 	}
+}
+
+func (e *EReader) handleNextValidId(b []byte, handler EHandler) error {
+	m := &api.NextValidId{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	e.twsClient.status.setNextValidId(*m.OrderId)
+	if !e.twsClient.status.isReady() {
+		e.twsClient.status.setReady()
+	}
+	return handler.NextValidId(m)
+}
+
+func (e *EReader) handleAccountSummary(b []byte, handler EHandler) error {
+	m := &api.AccountSummary{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.AccountSummary(m)
+}
+
+func (e *EReader) handleContractData(b []byte, handler EHandler) error {
+	m := &api.ContractData{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ContractData(m)
+}
+
+func (e *EReader) handleTickPrice(b []byte, handler EHandler) error {
+	m := &api.TickPrice{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.TickPrice(m)
+}
+
+func (e *EReader) handleTickSize(b []byte, handler EHandler) error {
+	m := &api.TickSize{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.TickSize(m)
+}
+
+func (e *EReader) handleTickString(b []byte, handler EHandler) error {
+	m := &api.TickString{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.TickString(m)
+}
+
+func (e *EReader) handleHistoricalData(b []byte, handler EHandler) error {
+	m := &api.HistoricalData{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.HistoricalData(m)
+}
+
+func (e *EReader) handleHistoricalDataEnd(b []byte, handler EHandler) error {
+	m := &api.HistoricalDataEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.HistoricalDataEnd(m)
+}
+
+func (e *EReader) handleErrorMessage(b []byte, handler EHandler) error {
+	m := &api.ErrorMessage{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ErrorMessage(m)
 }
