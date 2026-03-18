@@ -10,12 +10,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type request struct {
+type apiRequest struct {
 	sender *ESender
 	proto  proto.Message
 }
 
-func (r *request) Send(ctx context.Context) error {
+func (r *apiRequest) Send(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -25,13 +25,13 @@ func (r *request) Send(ctx context.Context) error {
 // NextValidId.proto
 
 type NextValidIdRequest struct {
-	*request
+	*apiRequest
 }
 
 func NewNextValidIdRequest(s *ESender) *NextValidIdRequest {
 	numIds := int32(-1)
 	return &NextValidIdRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.IdsRequest{
 				NumIds: &numIds,
@@ -108,7 +108,7 @@ var AllTags = []string{
 }
 
 type AccountSummaryRequest struct {
-	*request
+	*apiRequest
 }
 
 func NewAccountSummaryRequest(s *ESender, reqId int32, group, tags string) *AccountSummaryRequest {
@@ -124,7 +124,7 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group, tags string) *Acco
 		Tags:  &tags,
 	}
 	return &AccountSummaryRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto:  m,
 		},
@@ -134,7 +134,7 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group, tags string) *Acco
 // ContractDataRequest.proto
 
 type ContractDataRequest struct {
-	*request
+	*apiRequest
 }
 
 func NewContractDataRequest(s *ESender, reqId int32, symb *Symbol) *ContractDataRequest {
@@ -150,7 +150,7 @@ func NewContractDataRequest(s *ESender, reqId int32, symb *Symbol) *ContractData
 		Currency:    &curr,
 	}
 	return &ContractDataRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.ContractDataRequest{
 				ReqId:    &reqId,
@@ -172,12 +172,12 @@ const (
 )
 
 type MarketDataTypeRequest struct {
-	*request
+	*apiRequest
 }
 
 func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataRequest {
 	return &MarketDataRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.MarketDataTypeRequest{
 				MarketDataType: int32Ptr(int32(l)),
@@ -189,7 +189,7 @@ func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataRequest 
 // MarketDataRequest.proto
 
 type MarketDataRequest struct {
-	*request
+	*apiRequest
 }
 
 func NewMarketDataRequest(s *ESender, reqId int32, symb *Symbol) *MarketDataRequest {
@@ -206,7 +206,7 @@ func NewMarketDataRequest(s *ESender, reqId int32, symb *Symbol) *MarketDataRequ
 	}
 
 	return &MarketDataRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.MarketDataRequest{
 				ReqId:              &reqId,
@@ -221,7 +221,8 @@ func NewMarketDataRequest(s *ESender, reqId int32, symb *Symbol) *MarketDataRequ
 // HistoricalDataRequest.proto
 
 type HistoricalDataRequest struct {
-	*request
+	*apiRequest
+
 	params *QueryParams
 }
 
@@ -241,7 +242,7 @@ func NewHistoricalDataRequest(s *ESender, reqId int32, symb *Symbol, params *Que
 		Currency:    &curr,
 	}
 	return &HistoricalDataRequest{
-		request: &request{
+		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.HistoricalDataRequest{
 				ReqId:          &reqId,
@@ -270,5 +271,5 @@ func (r *HistoricalDataRequest) Send(ctx context.Context) error {
 			return fmt.Errorf("time range cannot exceed one week")
 		}
 	}
-	return r.request.Send(ctx)
+	return r.apiRequest.Send(ctx)
 }

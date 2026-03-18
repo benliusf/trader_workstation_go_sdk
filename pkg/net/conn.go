@@ -3,14 +3,23 @@ package net
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 	"time"
 )
 
 const (
-	apiHeader     = "API\000"
-	versionHeader = "v222..222"
+	API_HEADER = "API\000"
+
+	MIN_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
+	MAX_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
 )
+
+var verHeader string
+
+func init() {
+	verHeader = fmt.Sprintf("%v..%v", MIN_VER, MAX_VER)
+}
 
 type TWSConn struct {
 	ReadTimeout  time.Duration
@@ -38,10 +47,10 @@ func (c *TWSConn) Open(addr string) (err error) {
 
 func (c *TWSConn) sendConnectRequest() error {
 	buf := bytes.NewBuffer(nil)
-	if _, err := buf.Write([]byte(apiHeader)); err != nil {
+	if _, err := buf.Write([]byte(API_HEADER)); err != nil {
 		return err
 	}
-	ver := []byte(versionHeader)
+	ver := []byte(verHeader)
 	if err := binary.Write(buf, binary.BigEndian, int32(len(ver))); err != nil {
 		return err
 	}
