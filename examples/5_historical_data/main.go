@@ -50,6 +50,7 @@ func main() {
 	}()
 
 	now := time.Now()
+	startTime := now.Add(-24 * time.Hour)
 	symb := &client.Symbol{
 		Ticker:   "AAPL",
 		Type:     client.STOCK,
@@ -58,8 +59,8 @@ func main() {
 		Curr:     client.USD,
 	}
 	params := &client.QueryParams{
-		EndTime:    now.Truncate(24 * time.Hour).Add(-24 * 7 * time.Hour),
-		Duration:   client.ONE_WEEK,
+		StartTime:  startTime,
+		EndTime:    now,
 		BarSize:    client.ONE_HOUR,
 		WhatToShow: client.TRADES,
 	}

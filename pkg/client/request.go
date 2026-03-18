@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -221,9 +222,10 @@ func NewMarketDataRequest(s *ESender, reqId int32, symb *Symbol) *MarketDataRequ
 
 type HistoricalDataRequest struct {
 	*request
+	params *QueryParams
 }
 
-func NewHistoricalDataRequest(s *ESender, reqId int32, symb *Symbol, param *QueryParams) *MarketDataRequest {
+func NewHistoricalDataRequest(s *ESender, reqId int32, symb *Symbol, params *QueryParams) *HistoricalDataRequest {
 	const tsFormat = "20060102 15:04:05 US/Eastern"
 	loc, _ := time.LoadLocation("US/Eastern")
 
@@ -238,20 +240,35 @@ func NewHistoricalDataRequest(s *ESender, reqId int32, symb *Symbol, param *Quer
 		PrimaryExch: &primExch,
 		Currency:    &curr,
 	}
-	return &MarketDataRequest{
+	return &HistoricalDataRequest{
 		request: &request{
 			sender: s,
 			proto: &api.HistoricalDataRequest{
 				ReqId:          &reqId,
 				Contract:       c,
-				EndDateTime:    stringPtr(param.EndTime.In(loc).Format(tsFormat)),
-				Duration:       stringPtr(string(param.Duration)),
-				BarSizeSetting: stringPtr(string(param.BarSize)),
-				WhatToShow:     stringPtr(string(param.WhatToShow)),
+				EndDateTime:    stringPtr(params.EndTime.In(loc).Format(tsFormat)),
+				Duration:       stringPtr(params.Duration().String()),
+				BarSizeSetting: stringPtr(string(params.BarSize)),
+				WhatToShow:     stringPtr(string(params.WhatToShow)),
 				UseRTH:         boolPtr(true),
 				FormatDate:     int32Ptr(1),
 				KeepUpToDate:   boolPtr(false),
 			},
 		},
+		params: params,
 	}
+}
+
+func (r *HistoricalDataRequest) Send(ctx context.Context) error {
+	now := time.Now()
+	if r.params != nil {
+		if r.params.StartTime.Before(now.Add(-720 * 6 * time.Hour)) {
+			return fmt.Errorf("start time out of range")
+		}
+		timeRange := r.params.EndTime.Sub(r.params.StartTime)
+		if timeRange.Hours() > (7 * 24) {
+			return fmt.Errorf("time range cannot exceed one week")
+		}
+	}
+	return r.request.Send(ctx)
 }

@@ -1,23 +1,43 @@
 package client
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
-type Duration string
+type Temporal string
 
 const (
-	ONE_DAY  Duration = "1 D"
-	ONE_WEEK Duration = "1 W"
+	SECOND = "S"
+	DAY    = "D"
+	WEEK   = "W"
 )
+
+type Duration struct {
+	N int
+	T Temporal
+}
+
+func (d Duration) String() string {
+	return fmt.Sprintf("%d %s", d.N, d.T)
+}
 
 type BarSize string
 
 const (
-	FIFTEEN_SECOND   BarSize = "15 secs"
-	ONE_MINUTE       BarSize = "1 mins"
-	FIVE_MINUTE      BarSize = "5 mins"
-	THIRTY_MINUTE    BarSize = "30 mins"
-	ONE_HOUR         BarSize = "1 hour"
-	ONE_DAY_BAR_SIZE BarSize = "1 day"
+	ONE_SECOND     BarSize = "1 sec"
+	FIVE_SECOND    BarSize = "5 secs"
+	FIFTEEN_SECOND BarSize = "15 secs"
+	THIRTY_SECOND  BarSize = "30 secs"
+	ONE_MINUTE     BarSize = "1 min"
+	TWO_MINUTE     BarSize = "2 mins"
+	THREE_MINUTE   BarSize = "3 mins"
+	FOUR_MINUTE    BarSize = "4 mins"
+	FIVE_MINUTE    BarSize = "5 mins"
+	FIFTEEN_MINUTE BarSize = "15 mins"
+	THIRTY_MINUTE  BarSize = "30 mins"
+	ONE_HOUR       BarSize = "1 hour"
+	ONE_DAY        BarSize = "1 day"
 )
 
 type DisplayType string
@@ -34,8 +54,16 @@ const (
 )
 
 type QueryParams struct {
+	StartTime  time.Time
 	EndTime    time.Time
-	Duration   Duration
 	BarSize    BarSize
 	WhatToShow DisplayType
+}
+
+func (p *QueryParams) Duration() *Duration {
+	diff := p.EndTime.Sub(p.StartTime)
+	return &Duration{
+		N: int(diff.Seconds()),
+		T: SECOND,
+	}
 }
