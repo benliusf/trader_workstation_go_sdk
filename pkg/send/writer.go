@@ -20,6 +20,8 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 		msgId = REQ_IDS
 	case *api.AccountSummaryRequest:
 		msgId = REQ_ACCOUNT_SUMMARY
+	case *api.AccountDataRequest:
+		msgId = REQ_ACCT_DATA
 	case *api.ContractDataRequest:
 		msgId = REQ_CONTRACT_DATA
 	case *api.MarketDataTypeRequest:
@@ -28,6 +30,8 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 		msgId = REQ_MKT_DATA
 	case *api.HistoricalDataRequest:
 		msgId = REQ_HISTORICAL_DATA
+	case *api.PositionsRequest:
+		msgId = REQ_POSITIONS
 	default:
 		return fmt.Errorf("'%T' is not implemented", t)
 	}

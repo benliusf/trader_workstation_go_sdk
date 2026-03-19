@@ -32,9 +32,39 @@ func (h *ExampleHandler) AccountSummary(m *api.AccountSummary) error {
 	return nil
 }
 
+func (h *ExampleHandler) AccountSummaryEnd(m *api.AccountSummaryEnd) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received account summary end: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) AccountValue(m *api.AccountValue) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received account value: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) AccountUpdateTime(m *api.AccountUpdateTime) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received account update time: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) AccountDataEnd(m *api.AccountDataEnd) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received account data end: %s", d)
+	return nil
+}
+
 func (h *ExampleHandler) ContractData(m *api.ContractData) error {
 	d, _ := protojson.Marshal(m)
 	h.logger.Info("received contract data: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) ContractDataEnd(m *api.ContractDataEnd) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received contract data end: %s", d)
 	return nil
 }
 
@@ -65,6 +95,18 @@ func (h *ExampleHandler) HistoricalData(m *api.HistoricalData) error {
 func (h *ExampleHandler) HistoricalDataEnd(m *api.HistoricalDataEnd) error {
 	d, _ := protojson.Marshal(m)
 	h.logger.Info("received historical data end: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) Position(m *api.Position) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received position data: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) PositionEnd(m *api.PositionEnd) error {
+	d, _ := protojson.Marshal(m)
+	h.logger.Info("received position end: %s", d)
 	return nil
 }
 

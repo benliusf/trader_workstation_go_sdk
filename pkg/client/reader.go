@@ -66,8 +66,18 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 		return e.handleNextValidId(b, handler)
 	case read.ACCOUNT_SUMMARY:
 		return e.handleAccountSummary(b, handler)
+	case read.ACCOUNT_SUMMARY_END:
+		return e.handleAccountSummaryEnd(b, handler)
+	case read.ACCT_VALUE:
+		return e.handleAccountValue(b, handler)
+	case read.ACCT_UPDATE_TIME:
+		return e.handleAccountUpdateTime(b, handler)
+	case read.ACCT_DOWNLOAD_END:
+		return e.handleAccountDataEnd(b, handler)
 	case read.CONTRACT_DATA:
 		return e.handleContractData(b, handler)
+	case read.CONTRACT_DATA_END:
+		return e.handleContractDataEnd(b, handler)
 	case read.TICK_PRICE:
 		return e.handleTickPrice(b, handler)
 	case read.TICK_SIZE:
@@ -78,6 +88,10 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 		return e.handleHistoricalData(b, handler)
 	case read.HISTORICAL_DATA_END:
 		return e.handleHistoricalDataEnd(b, handler)
+	case read.POSITION_DATA:
+		return e.handlePosition(b, handler)
+	case read.POSITION_END:
+		return e.handlePositionEnd(b, handler)
 	case read.ERR_MSG:
 		return e.handleErrorMessage(b, handler)
 	default:
@@ -106,12 +120,52 @@ func (e *EReader) handleAccountSummary(b []byte, handler EHandler) error {
 	return handler.AccountSummary(m)
 }
 
+func (e *EReader) handleAccountSummaryEnd(b []byte, handler EHandler) error {
+	m := &api.AccountSummaryEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.AccountSummaryEnd(m)
+}
+
+func (e *EReader) handleAccountValue(b []byte, handler EHandler) error {
+	m := &api.AccountValue{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.AccountValue(m)
+}
+
+func (e *EReader) handleAccountUpdateTime(b []byte, handler EHandler) error {
+	m := &api.AccountUpdateTime{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.AccountUpdateTime(m)
+}
+
+func (e *EReader) handleAccountDataEnd(b []byte, handler EHandler) error {
+	m := &api.AccountDataEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.AccountDataEnd(m)
+}
+
 func (e *EReader) handleContractData(b []byte, handler EHandler) error {
 	m := &api.ContractData{}
 	if err := deserialize(m, b); err != nil {
 		return err
 	}
 	return handler.ContractData(m)
+}
+
+func (e *EReader) handleContractDataEnd(b []byte, handler EHandler) error {
+	m := &api.ContractDataEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ContractDataEnd(m)
 }
 
 func (e *EReader) handleTickPrice(b []byte, handler EHandler) error {
@@ -152,6 +206,22 @@ func (e *EReader) handleHistoricalDataEnd(b []byte, handler EHandler) error {
 		return err
 	}
 	return handler.HistoricalDataEnd(m)
+}
+
+func (e *EReader) handlePosition(b []byte, handler EHandler) error {
+	m := &api.Position{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.Position(m)
+}
+
+func (e *EReader) handlePositionEnd(b []byte, handler EHandler) error {
+	m := &api.PositionEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.PositionEnd(m)
 }
 
 func (e *EReader) handleErrorMessage(b []byte, handler EHandler) error {

@@ -49,28 +49,24 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	// Tell the server that we're requesting DELAYED data -
-	//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#delayed-market-data
-	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
-
-	// Request for AAPL stock symbol
-	aaplTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(), &client.Symbol{
+	now := time.Now()
+	startTime := now.Add(-24 * time.Hour)
+	symb := &client.Symbol{
 		Ticker:   "AAPL",
 		Type:     client.STOCK,
 		Exch:     client.SMART,
 		PrimExch: client.NASDAQ,
 		Curr:     client.USD,
-	})
-	// Request for NVDA stock symbol
-	nvdaTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(), &client.Symbol{
-		Ticker:   "NVDA",
-		Type:     client.STOCK,
-		Exch:     client.SMART,
-		PrimExch: client.NASDAQ,
-		Curr:     client.USD,
-	})
+	}
+	params := &client.QueryParams{
+		StartTime:  startTime,
+		EndTime:    now,
+		BarSize:    client.ONE_HOUR,
+		WhatToShow: client.TRADES,
+	}
+	aaplTicker := client.NewHistoricalDataRequest(writer, cl.GetNextReqId(), symb, params)
 	for {
-		if err := marketLevel.Send(ctx); err != nil {
+		if err := aaplTicker.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)
@@ -78,15 +74,9 @@ func main() {
 			}
 			panic(err)
 		}
-		if err := aaplTicker.Send(ctx); err != nil {
-			panic(err)
-		}
-		if err := nvdaTicker.Send(ctx); err != nil {
-			panic(err)
-		}
 		break
 	}
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 	done()
 }

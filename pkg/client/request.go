@@ -138,6 +138,40 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []Acco
 	}
 }
 
+// AccountDataRequest.proto
+
+type AccountDataRequest struct {
+	*apiRequest
+}
+
+func NewAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
+	return &AccountDataRequest{
+		apiRequest: &apiRequest{
+			sender: s,
+			proto: &api.AccountDataRequest{
+				AcctCode:  strPtr(accountId),
+				Subscribe: boolPtr(true),
+			},
+		},
+	}
+}
+
+type CancelAccountDataRequest struct {
+	*apiRequest
+}
+
+func NewCancelAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
+	return &AccountDataRequest{
+		apiRequest: &apiRequest{
+			sender: s,
+			proto: &api.AccountDataRequest{
+				AcctCode:  strPtr(accountId),
+				Subscribe: boolPtr(false),
+			},
+		},
+	}
+}
+
 // ContractDataRequest.proto
 
 type ContractDataRequest struct {
@@ -261,4 +295,19 @@ func (r *HistoricalDataRequest) Send(ctx context.Context) error {
 		}
 	}
 	return r.apiRequest.Send(ctx)
+}
+
+// PositionsRequest.proto
+
+type PositionsRequest struct {
+	*apiRequest
+}
+
+func NewPositionsRequest(s *ESender) *PositionsRequest {
+	return &PositionsRequest{
+		&apiRequest{
+			sender: s,
+			proto:  &api.PositionsRequest{},
+		},
+	}
 }
