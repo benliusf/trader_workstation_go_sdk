@@ -1,6 +1,6 @@
 package client
 
-var stringPtr func(s string) *string = func(s string) *string {
+var strPtr func(s string) *string = func(s string) *string {
 	return &s
 }
 

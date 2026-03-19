@@ -59,7 +59,7 @@ func main() {
 	reqId := cl.GetNextReqId()
 
 	// Create new request using the reqId.
-	accountSummary := client.NewAccountSummaryRequest(writer, reqId, "", "")
+	accountSummary := client.NewAccountSummaryRequest(writer, reqId, "", []client.AccountSummaryTag{})
 	for {
 		if err := accountSummary.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {

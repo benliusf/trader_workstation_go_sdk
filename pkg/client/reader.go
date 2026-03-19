@@ -90,9 +90,10 @@ func (e *EReader) handleNextValidId(b []byte, handler EHandler) error {
 	if err := deserialize(m, b); err != nil {
 		return err
 	}
-	e.twsClient.status.setNextValidId(*m.OrderId)
-	if !e.twsClient.status.isReady() {
-		e.twsClient.status.setReady()
+	status := e.twsClient.status
+	status.setNextValidId(*m.OrderId)
+	if !status.isReady() {
+		status.setReady()
 	}
 	return handler.NextValidId(m)
 }

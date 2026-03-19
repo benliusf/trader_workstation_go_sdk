@@ -24,6 +24,7 @@ func Next(conn *net.TWSConn) (*Message, error) {
 }
 
 func ServerVersion(conn *net.TWSConn) (*ServerVersionResponse, error) {
+	const tsFormat = "20060102 15:04:05 PST"
 	msg, err := Next(conn)
 	if err != nil {
 		return nil, err
@@ -34,7 +35,7 @@ func ServerVersion(conn *net.TWSConn) (*ServerVersionResponse, error) {
 	}
 	var serverTs int64
 	tsStr, _ := msg.ReadStr()
-	ts, _ := time.Parse(SERVER_TS_FORMAT, tsStr)
+	ts, _ := time.Parse(tsFormat, tsStr)
 	if !ts.IsZero() {
 		serverTs = ts.Unix()
 	}

@@ -26,6 +26,10 @@ func NewSender(cl *TWSClient) (*ESender, error) {
 }
 
 func (e *ESender) StartAPI() error {
+	status := e.twsClient.status
+	if status.isReady() {
+		return nil
+	}
 	req := &api.StartApiRequest{
 		ClientId: &e.twsClient.Conf.ClientID,
 	}
@@ -36,7 +40,8 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if !e.twsClient.status.isReady() {
+	status := e.twsClient.status
+	if !status.isReady() {
 		return ErrClientNotReady
 	}
 	return send.Write(e.twsClient.conn, m)

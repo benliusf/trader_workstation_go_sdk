@@ -5,6 +5,10 @@ import (
 	"fmt"
 )
 
+const (
+	int32BytesLength int = 4
+)
+
 func readStr(b []byte, start int, length int) (string, error) {
 	var i int = start
 	for ; i < len(b); i++ {
@@ -21,7 +25,6 @@ func readStr(b []byte, start int, length int) (string, error) {
 }
 
 func readInt32(b []byte, start int) (int32, error) {
-	const int32BytesLength int = 4
 	bytesLength := int32BytesLength
 	if len(b) < int32BytesLength {
 		bytesLength = len(b)

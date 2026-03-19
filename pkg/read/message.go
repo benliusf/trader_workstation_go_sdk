@@ -69,7 +69,6 @@ func (m *Message) ReadStr() (string, error) {
 func (m *Message) ReadInt32() (int32, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	const int32BytesLength int = 4
 	if m.idx >= len(m.body) {
 		return -1, io.EOF
 	}
