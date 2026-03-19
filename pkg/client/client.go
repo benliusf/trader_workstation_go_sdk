@@ -9,13 +9,8 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/read"
 )
 
-const (
-	DEFAULT_READ_TIMEOUT  = 10 * time.Second
-	DEFAULT_WRITE_TIMEOUT = 10 * time.Second
-)
-
 type TWSConfig struct {
-	ClientID     int32
+	ClientId     int32
 	Host         string
 	Port         string
 	ReadTimeout  time.Duration
@@ -24,7 +19,7 @@ type TWSConfig struct {
 }
 
 type TWSClient struct {
-	clientID     int32
+	clientId     int32
 	host         string
 	port         string
 	readTimeout  time.Duration
@@ -48,7 +43,7 @@ func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {
 		return nil, fmt.Errorf("port not defined!")
 	}
 	cl := &TWSClient{
-		clientID:     conf.ClientID,
+		clientId:     conf.ClientId,
 		host:         conf.Host,
 		port:         conf.Port,
 		readTimeout:  conf.ReadTimeout,
@@ -57,15 +52,15 @@ func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {
 		logger:       logger,
 		status:       &clientState{},
 	}
+	if cl.readTimeout <= 0 {
+		cl.readTimeout = 10 * time.Second
+	}
+	if cl.writeTimeout <= 0 {
+		cl.writeTimeout = 10 * time.Second
+	}
 	if cl.privileges == nil {
 		tmp := ReadOnly()
 		cl.privileges = &tmp
-	}
-	if cl.readTimeout <= 0 {
-		cl.readTimeout = DEFAULT_READ_TIMEOUT
-	}
-	if cl.writeTimeout <= 0 {
-		cl.writeTimeout = DEFAULT_WRITE_TIMEOUT
 	}
 	if cl.logger == nil {
 		cl.logger = &log.EmptyLogger{}
@@ -93,17 +88,25 @@ func (c *TWSClient) Connect() (err error) {
 		return fmt.Errorf("failed to get server version: %v", err)
 	}
 	c.serverVersion = res.ServerVersion
-	c.logger.Info("client=%d connected to %v ver=%d ts=%v", c.clientID, addr, c.serverVersion, time.Unix(res.Timestamp, 0))
+	c.logger.Info("client=%d connected to %v ver=%d ts=%v", c.clientId, addr, c.serverVersion, time.Unix(res.Timestamp, 0))
 	return nil
 }
 
 func (c *TWSClient) Disconnect() error {
-	c.logger.Info("client=%d disconnected", c.clientID)
+	c.logger.Info("client=%d disconnected", c.clientId)
 	if c != nil &&
 		c.conn != nil {
 		return c.conn.Close()
 	}
 	return nil
+}
+
+func (c *TWSClient) ClientId() int32 {
+	return c.clientId
+}
+
+func (c *TWSClient) ServerVersion() int32 {
+	return c.serverVersion
 }
 
 func (c *TWSClient) GetNextReqId() int32 {

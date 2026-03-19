@@ -14,7 +14,7 @@ import (
 
 func main() {
 	conf := client.TWSConfig{
-		ClientID:     0,
+		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
 		ReadTimeout:  5 * time.Second,
