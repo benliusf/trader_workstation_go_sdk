@@ -31,7 +31,7 @@ func (e *ESender) StartAPI() error {
 		return nil
 	}
 	req := &api.StartApiRequest{
-		ClientId: &e.twsClient.Conf.ClientID,
+		ClientId: &e.twsClient.clientID,
 	}
 	return send.Write(e.twsClient.conn, req)
 }
