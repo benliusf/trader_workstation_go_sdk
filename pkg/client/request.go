@@ -178,19 +178,13 @@ type ContractDataRequest struct {
 	*apiRequest
 }
 
-func NewContractDataRequest(s *ESender, reqId int32, symb *Symbol) *ContractDataRequest {
+func NewContractDataRequest(s *ESender, reqId int32, contr *api.Contract) *ContractDataRequest {
 	return &ContractDataRequest{
 		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.ContractDataRequest{
-				ReqId: &reqId,
-				Contract: &api.Contract{
-					Symbol:      &symb.Ticker,
-					SecType:     strPtr(string(symb.Type)),
-					Exchange:    strPtr(string(symb.Exch)),
-					PrimaryExch: strPtr(string(symb.PrimExch)),
-					Currency:    strPtr(string(symb.Curr)),
-				},
+				ReqId:    &reqId,
+				Contract: contr,
 			},
 		},
 	}
@@ -228,19 +222,13 @@ type MarketDataRequest struct {
 	*apiRequest
 }
 
-func NewMarketDataRequest(s *ESender, reqId int32, symb *Symbol) *MarketDataRequest {
+func NewMarketDataRequest(s *ESender, reqId int32, contr *api.Contract) *MarketDataRequest {
 	return &MarketDataRequest{
 		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.MarketDataRequest{
-				ReqId: &reqId,
-				Contract: &api.Contract{
-					Symbol:      &symb.Ticker,
-					SecType:     strPtr(string(symb.Type)),
-					Exchange:    strPtr(string(symb.Exch)),
-					PrimaryExch: strPtr(string(symb.PrimExch)),
-					Currency:    strPtr(string(symb.Curr)),
-				},
+				ReqId:              &reqId,
+				Contract:           contr,
 				Snapshot:           boolPtr(false),
 				RegulatorySnapshot: boolPtr(false),
 			},
@@ -255,21 +243,15 @@ type HistoricalDataRequest struct {
 	params *QueryParams
 }
 
-func NewHistoricalDataRequest(s *ESender, reqId int32, symb *Symbol, params *QueryParams) *HistoricalDataRequest {
+func NewHistoricalDataRequest(s *ESender, reqId int32, contr *api.Contract, params *QueryParams) *HistoricalDataRequest {
 	const tsFormat = "20060102 15:04:05 US/Eastern"
 	loc, _ := time.LoadLocation("US/Eastern")
 	return &HistoricalDataRequest{
 		apiRequest: &apiRequest{
 			sender: s,
 			proto: &api.HistoricalDataRequest{
-				ReqId: &reqId,
-				Contract: &api.Contract{
-					Symbol:      &symb.Ticker,
-					SecType:     strPtr(string(symb.Type)),
-					Exchange:    strPtr(string(symb.Exch)),
-					PrimaryExch: strPtr(string(symb.PrimExch)),
-					Currency:    strPtr(string(symb.Curr)),
-				},
+				ReqId:          &reqId,
+				Contract:       contr,
 				EndDateTime:    strPtr(params.EndTime.In(loc).Format(tsFormat)),
 				Duration:       strPtr(params.Duration().String()),
 				BarSizeSetting: strPtr(string(params.BarSize)),
@@ -308,6 +290,25 @@ func NewPositionsRequest(s *ESender) *PositionsRequest {
 		&apiRequest{
 			sender: s,
 			proto:  &api.PositionsRequest{},
+		},
+	}
+}
+
+// PlaceOrderRequest.proto
+
+type PlaceOrderRequest struct {
+	*apiRequest
+}
+
+func NewPlaceOrderRequest(s *ESender, orderId int32, contr *api.Contract, order *api.Order) *PlaceOrderRequest {
+	return &PlaceOrderRequest{
+		&apiRequest{
+			sender: s,
+			proto: &api.PlaceOrderRequest{
+				OrderId:  &orderId,
+				Contract: contr,
+				Order:    order,
+			},
 		},
 	}
 }

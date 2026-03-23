@@ -49,13 +49,12 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	contract := client.NewContractDataRequest(writer, cl.GetNextReqId(), &client.Symbol{
-		Ticker:   "AAPL",
-		Type:     client.STOCK,
-		Exch:     client.SMART,
-		PrimExch: client.NASDAQ,
-		Curr:     client.USD,
-	})
+	bd := client.NewContractBuilder().
+		SetSymbol("AAPL").
+		SetSecType(client.STOCK).
+		SetExchange(client.SMART).
+		SetPrimaryExch(client.NASDAQ)
+	contract := client.NewContractDataRequest(writer, cl.GetNextReqId(), bd.Build())
 	for {
 		if err := contract.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {

@@ -54,21 +54,20 @@ func main() {
 	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
 
 	// Request for AAPL stock symbol
-	aaplTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(), &client.Symbol{
-		Ticker:   "AAPL",
-		Type:     client.STOCK,
-		Exch:     client.SMART,
-		PrimExch: client.NASDAQ,
-		Curr:     client.USD,
-	})
+
+	aaplTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(),
+		client.NewContractBuilder().
+			SetSymbol("AAPL").
+			SetSecType(client.STOCK).
+			SetExchange(client.SMART).
+			SetPrimaryExch(client.NASDAQ).Build())
 	// Request for NVDA stock symbol
-	nvdaTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(), &client.Symbol{
-		Ticker:   "NVDA",
-		Type:     client.STOCK,
-		Exch:     client.SMART,
-		PrimExch: client.NASDAQ,
-		Curr:     client.USD,
-	})
+	nvdaTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(),
+		client.NewContractBuilder().
+			SetSymbol("NVDA").
+			SetSecType(client.STOCK).
+			SetExchange(client.SMART).
+			SetPrimaryExch(client.NASDAQ).Build())
 	for {
 		if err := marketLevel.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {

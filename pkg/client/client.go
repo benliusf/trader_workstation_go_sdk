@@ -92,8 +92,14 @@ func (c *TWSClient) Connect() (err error) {
 	return nil
 }
 
-func (c *TWSClient) Disconnect() error {
-	c.logger.Info("client=%d disconnected", c.clientId)
+func (c *TWSClient) Disconnect() (err error) {
+	defer func() {
+		if err != nil {
+			c.logger.Error("error during disconnect: %v", err)
+			return
+		}
+		c.logger.Info("client=%d disconnected", c.clientId)
+	}()
 	if c != nil &&
 		c.conn != nil {
 		return c.conn.Close()

@@ -44,5 +44,17 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) error {
 	if !status.isReady() {
 		return ErrClientNotReady
 	}
+	r := e.twsClient.privileges
+	if r == nil {
+		return fmt.Errorf("%w: client lacks privileges", ErrNotAllowed)
+	}
+	switch m.(type) {
+	case *api.PlaceOrderRequest:
+		if !CanCreate(r.Orders) {
+			return fmt.Errorf("%w: client cannot place orders", ErrNotAllowed)
+		}
+	default:
+		// noop
+	}
 	return send.Write(e.twsClient.conn, m)
 }

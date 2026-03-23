@@ -51,20 +51,18 @@ func main() {
 
 	now := time.Now()
 	startTime := now.Add(-24 * time.Hour)
-	symb := &client.Symbol{
-		Ticker:   "AAPL",
-		Type:     client.STOCK,
-		Exch:     client.SMART,
-		PrimExch: client.NASDAQ,
-		Curr:     client.USD,
-	}
+	bd := client.NewContractBuilder().
+		SetSymbol("AAPL").
+		SetSecType(client.STOCK).
+		SetExchange(client.SMART).
+		SetPrimaryExch(client.NASDAQ)
 	params := &client.QueryParams{
 		StartTime:  startTime,
 		EndTime:    now,
 		BarSize:    client.ONE_HOUR,
 		WhatToShow: client.TRADES,
 	}
-	aaplTicker := client.NewHistoricalDataRequest(writer, cl.GetNextReqId(), symb, params)
+	aaplTicker := client.NewHistoricalDataRequest(writer, cl.GetNextReqId(), bd.Build(), params)
 	for {
 		if err := aaplTicker.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
