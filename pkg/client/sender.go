@@ -51,7 +51,15 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) error {
 	switch m.(type) {
 	case *api.PlaceOrderRequest:
 		if !CanCreate(r.Orders) {
-			return fmt.Errorf("%w: client cannot place orders", ErrNotAllowed)
+			return fmt.Errorf("%w: no create permission", ErrNotAllowed)
+		}
+	case *api.CancelOrderRequest:
+		if !CanDelete(r.Orders) {
+			return fmt.Errorf("%w: no delete permission", ErrNotAllowed)
+		}
+	case *api.GlobalCancelRequest:
+		if !CanDelete(r.Orders) {
+			return fmt.Errorf("%w: no delete permission", ErrNotAllowed)
 		}
 	default:
 		// noop

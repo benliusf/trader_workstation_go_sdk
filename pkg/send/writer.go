@@ -32,6 +32,16 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 		msgId = REQ_HISTORICAL_DATA
 	case *api.PositionsRequest:
 		msgId = REQ_POSITIONS
+	case *api.PlaceOrderRequest:
+		msgId = PLACE_ORDER
+	case *api.CancelOrderRequest:
+		msgId = CANCEL_ORDER
+	case *api.GlobalCancelRequest:
+		msgId = REQ_GLOBAL_CANCEL
+	case *api.OpenOrdersRequest:
+		msgId = REQ_OPEN_ORDERS
+	case *api.AllOpenOrdersRequest:
+		msgId = REQ_ALL_OPEN_ORDERS
 	default:
 		return fmt.Errorf("'%T' is not implemented", t)
 	}

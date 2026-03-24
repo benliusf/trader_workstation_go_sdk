@@ -10,12 +10,10 @@ import (
 )
 
 func TestSender(t *testing.T) {
-	ro := ReadOnly()
 	cl, _ := NewClient(TWSConfig{
-		ClientId:   0,
-		Host:       "localhost",
-		Port:       "7497",
-		Privileges: &ro,
+		ClientId: 0,
+		Host:     "localhost",
+		Port:     "7497",
 	}, nil)
 	cl.status.setReady()
 

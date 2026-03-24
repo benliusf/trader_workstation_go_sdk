@@ -36,6 +36,12 @@ type EHandler interface {
 
 	PositionEnd(m *api.PositionEnd) error
 
+	OpenOrder(m *api.OpenOrder) error
+
+	OpenOrdersEnd(m *api.OpenOrdersEnd) error
+
+	OrderStatus(m *api.OrderStatus) error
+
 	ErrorMessage(m *api.ErrorMessage) error
 
 	Unsupported(m *read.Message) error

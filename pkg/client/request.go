@@ -10,12 +10,12 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-type apiRequest struct {
+type apiRequest[T proto.Message] struct {
 	sender *ESender
-	proto  proto.Message
+	proto  T
 }
 
-func (r *apiRequest) Send(ctx context.Context) error {
+func (r *apiRequest[T]) Send(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -25,13 +25,13 @@ func (r *apiRequest) Send(ctx context.Context) error {
 // NextValidId.proto
 
 type NextValidIdRequest struct {
-	*apiRequest
+	*apiRequest[*api.IdsRequest]
 }
 
 func NewNextValidIdRequest(s *ESender) *NextValidIdRequest {
 	numIds := int32(-1)
 	return &NextValidIdRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.IdsRequest]{
 			sender: s,
 			proto: &api.IdsRequest{
 				NumIds: &numIds,
@@ -111,7 +111,7 @@ var AllTags = []AccountSummaryTag{
 }
 
 type AccountSummaryRequest struct {
-	*apiRequest
+	*apiRequest[*api.AccountSummaryRequest]
 }
 
 func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []AccountSummaryTag) *AccountSummaryRequest {
@@ -127,7 +127,7 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []Acco
 	}
 	tagsConcat := strings.Join(tmp, ",")
 	return &AccountSummaryRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.AccountSummaryRequest]{
 			sender: s,
 			proto: &api.AccountSummaryRequest{
 				ReqId: &reqId,
@@ -141,12 +141,12 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []Acco
 // AccountDataRequest.proto
 
 type AccountDataRequest struct {
-	*apiRequest
+	*apiRequest[*api.AccountDataRequest]
 }
 
 func NewAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
 	return &AccountDataRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.AccountDataRequest]{
 			sender: s,
 			proto: &api.AccountDataRequest{
 				AcctCode:  strPtr(accountId),
@@ -157,12 +157,12 @@ func NewAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDa
 }
 
 type CancelAccountDataRequest struct {
-	*apiRequest
+	*apiRequest[*api.AccountDataRequest]
 }
 
 func NewCancelAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
 	return &AccountDataRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.AccountDataRequest]{
 			sender: s,
 			proto: &api.AccountDataRequest{
 				AcctCode:  strPtr(accountId),
@@ -175,12 +175,12 @@ func NewCancelAccountDataRequest(s *ESender, reqId int32, accountId string) *Acc
 // ContractDataRequest.proto
 
 type ContractDataRequest struct {
-	*apiRequest
+	*apiRequest[*api.ContractDataRequest]
 }
 
 func NewContractDataRequest(s *ESender, reqId int32, contr *api.Contract) *ContractDataRequest {
 	return &ContractDataRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.ContractDataRequest]{
 			sender: s,
 			proto: &api.ContractDataRequest{
 				ReqId:    &reqId,
@@ -202,12 +202,12 @@ const (
 )
 
 type MarketDataTypeRequest struct {
-	*apiRequest
+	*apiRequest[*api.MarketDataTypeRequest]
 }
 
-func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataRequest {
-	return &MarketDataRequest{
-		apiRequest: &apiRequest{
+func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataTypeRequest {
+	return &MarketDataTypeRequest{
+		apiRequest: &apiRequest[*api.MarketDataTypeRequest]{
 			sender: s,
 			proto: &api.MarketDataTypeRequest{
 				MarketDataType: int32Ptr(int32(l)),
@@ -219,12 +219,12 @@ func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataRequest 
 // MarketDataRequest.proto
 
 type MarketDataRequest struct {
-	*apiRequest
+	*apiRequest[*api.MarketDataRequest]
 }
 
 func NewMarketDataRequest(s *ESender, reqId int32, contr *api.Contract) *MarketDataRequest {
 	return &MarketDataRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.MarketDataRequest]{
 			sender: s,
 			proto: &api.MarketDataRequest{
 				ReqId:              &reqId,
@@ -239,7 +239,7 @@ func NewMarketDataRequest(s *ESender, reqId int32, contr *api.Contract) *MarketD
 // HistoricalDataRequest.proto
 
 type HistoricalDataRequest struct {
-	*apiRequest
+	*apiRequest[*api.HistoricalDataRequest]
 	params *QueryParams
 }
 
@@ -247,7 +247,7 @@ func NewHistoricalDataRequest(s *ESender, reqId int32, contr *api.Contract, para
 	const tsFormat = "20060102 15:04:05 US/Eastern"
 	loc, _ := time.LoadLocation("US/Eastern")
 	return &HistoricalDataRequest{
-		apiRequest: &apiRequest{
+		apiRequest: &apiRequest[*api.HistoricalDataRequest]{
 			sender: s,
 			proto: &api.HistoricalDataRequest{
 				ReqId:          &reqId,
@@ -282,12 +282,12 @@ func (r *HistoricalDataRequest) Send(ctx context.Context) error {
 // PositionsRequest.proto
 
 type PositionsRequest struct {
-	*apiRequest
+	*apiRequest[*api.PositionsRequest]
 }
 
 func NewPositionsRequest(s *ESender) *PositionsRequest {
 	return &PositionsRequest{
-		&apiRequest{
+		&apiRequest[*api.PositionsRequest]{
 			sender: s,
 			proto:  &api.PositionsRequest{},
 		},
@@ -297,18 +297,80 @@ func NewPositionsRequest(s *ESender) *PositionsRequest {
 // PlaceOrderRequest.proto
 
 type PlaceOrderRequest struct {
-	*apiRequest
+	*apiRequest[*api.PlaceOrderRequest]
 }
 
-func NewPlaceOrderRequest(s *ESender, orderId int32, contr *api.Contract, order *api.Order) *PlaceOrderRequest {
+func NewPlaceOrderRequest(s *ESender, reqId int32, contr *api.Contract, order *api.Order) *PlaceOrderRequest {
 	return &PlaceOrderRequest{
-		&apiRequest{
+		&apiRequest[*api.PlaceOrderRequest]{
 			sender: s,
 			proto: &api.PlaceOrderRequest{
-				OrderId:  &orderId,
+				OrderId:  &reqId,
 				Contract: contr,
 				Order:    order,
 			},
+		},
+	}
+}
+
+// CancelOrderRequest.proto
+
+type CancelOrderRequest struct {
+	*apiRequest[*api.CancelOrderRequest]
+}
+
+func NewCancelOrderRequest(s *ESender, orderId int32) *CancelOrderRequest {
+	return &CancelOrderRequest{
+		&apiRequest[*api.CancelOrderRequest]{
+			sender: s,
+			proto: &api.CancelOrderRequest{
+				OrderId: &orderId,
+			},
+		},
+	}
+}
+
+// GlobalCancelRequest.proto
+
+type GlobalCancelRequest struct {
+	apiRequest *apiRequest[*api.GlobalCancelRequest]
+}
+
+func NewGlobalCancelRequest(s *ESender) *GlobalCancelRequest {
+	return &GlobalCancelRequest{
+		&apiRequest[*api.GlobalCancelRequest]{
+			sender: s,
+			proto:  &api.GlobalCancelRequest{},
+		},
+	}
+}
+
+// OpenOrdersRequest.proto
+
+type OpenOrdersRequest struct {
+	*apiRequest[*api.OpenOrdersRequest]
+}
+
+func NewOpenOrdersRequest(s *ESender) *OpenOrdersRequest {
+	return &OpenOrdersRequest{
+		&apiRequest[*api.OpenOrdersRequest]{
+			sender: s,
+			proto:  &api.OpenOrdersRequest{},
+		},
+	}
+}
+
+// AllOpenOrdersRequest.proto
+
+type AllOpenOrdersRequest struct {
+	*apiRequest[*api.AllOpenOrdersRequest]
+}
+
+func NewAllOpenOrdersRequest(s *ESender) *AllOpenOrdersRequest {
+	return &AllOpenOrdersRequest{
+		&apiRequest[*api.AllOpenOrdersRequest]{
+			sender: s,
+			proto:  &api.AllOpenOrdersRequest{},
 		},
 	}
 }
