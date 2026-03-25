@@ -117,7 +117,7 @@ func main() {
 		logger.Error("timed out waiting for account summary")
 		os.Exit(1)
 	case a := <-accountSummaryCh:
-		if !client.IsPaperTrading(a) {
+		if !client.IsPaperTrading(a.GetAccount()) {
 			logger.Error("account is not paper trading")
 			os.Exit(1)
 		}
