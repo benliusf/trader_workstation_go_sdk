@@ -13,7 +13,13 @@ type PrimaryExchange string
 type Currency string
 
 const (
-	STOCK SecurityType = "STK"
+	STOCK         SecurityType = "STK"
+	OPTION        SecurityType = "OPT"
+	FUTURE_OPTION SecurityType = "FOP"
+	FUTURE        SecurityType = "FUT"
+	FOREX_PAIR    SecurityType = "CASH"
+	COMMODITY     SecurityType = "CMDTY"
+	INDEX         SecurityType = "IND"
 )
 
 const (
@@ -22,6 +28,7 @@ const (
 
 const (
 	NASDAQ PrimaryExchange = "NASDAQ"
+	NYSE   PrimaryExchange = "NYSE"
 )
 
 const (
