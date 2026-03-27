@@ -108,8 +108,8 @@ for {
 }
 ```
 
-#### Output from the response
-The response from `AccountSummary` call will be printed to stdout using the [example handler](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/example_handler.go).
+#### Response output
+The `AccountSummary` response will be printed to stdout using the [example handler](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/example_handler.go).
 ```shell
 2026/03/26 21:33:26 [INFO] received account summary data: {"reqId":0,"account":"XXX","tag":"AccountType","value":"INDIVIDUAL"}
 2026/03/26 21:33:26 [INFO] received account summary data: {"reqId":0,"account":"XXX","tag":"DayTradesRemaining","value":"-1"}
