@@ -53,10 +53,10 @@ func main() {
 	//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#delayed-market-data
 	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
 
-	// Request for AAPL stock symbol
-	aaplTicker := client.NewMarketDataRequest(writer,
+	// Request for GOOG stock symbol
+	googTicker := client.NewMarketDataRequest(writer,
 		client.NewContractBuilder().
-			SetSymbol("AAPL").
+			SetSymbol("GOOG").
 			SetSecType(client.STOCK).
 			SetExchange(client.SMART).
 			SetPrimaryExch(client.NASDAQ).Build())
@@ -76,7 +76,7 @@ func main() {
 			}
 			panic(err)
 		}
-		if _, err := aaplTicker.Send(ctx); err != nil {
+		if _, err := googTicker.Send(ctx); err != nil {
 			panic(err)
 		}
 		if _, err := nvdaTicker.Send(ctx); err != nil {

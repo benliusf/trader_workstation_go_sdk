@@ -11,11 +11,8 @@ import (
 )
 
 // An example to demonstrate a API call to Account Summary -
-//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#sync-account-summary
 //
-// Every write request needs a unique reqId. The code below calls cl.GetNextReqId()
-// to get the next reqId before making the API call.
-
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#sync-account-summary
 func main() {
 	conf := client.TWSConfig{
 		ClientId:     0,
@@ -55,7 +52,6 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	// Create new request using the reqId.
 	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{})
 	for {
 		if _, err := accountSummary.Send(ctx); err != nil {
