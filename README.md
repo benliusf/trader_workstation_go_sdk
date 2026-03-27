@@ -15,6 +15,7 @@ Minimum required versions -
 
 Trader Workstation -
 * You need an account with Interactive Brokers and minimum funds to use certain API features.
+  * e.g. Live market data requires both paid subscription and funds.
 * Download and install `Trader Workstation 10.44.1` (or higher).
 * Follow [instructions](https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#tws-config-api) to enable API use.
 
@@ -61,7 +62,7 @@ if err != nil {
 }
 ```
 
-#### StartAPI
+#### `StartAPI()`
 This is a **required** step before making requests. We must inform the TWS instance to start accepting API calls.
 ```go
 if err := writer.StartAPI(); err != nil {
@@ -70,7 +71,7 @@ if err := writer.StartAPI(); err != nil {
 ```
 
 #### Create reader and call `reader.Read()` to consume API responses
-The `reader` uses a [handler](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/pkg/client/handler.go) to process the response types. This is an interface and you must implement your own handler. An example can be found [here](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/example_handler.go).
+The `reader` uses a [handler](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/pkg/client/handler.go) to process response types. This is an interface and you must implement your own handler. An example can be found [here](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/example_handler.go).
 ```go
 ctx, done := context.WithCancel(context.Background())
 reader, err := client.NewReader(cl)
@@ -95,7 +96,7 @@ https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#requesting-a
 accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{})
 
 // It is common for the first request to fail because the server is not ready to accept API calls
-// In this example, we enclose send() with a retry loop
+// In this example, we enclose Send() with a retry loop
 for {
         if reqId, err := accountSummary.Send(ctx); err != nil {
                 if errors.Is(err, client.ErrClientNotReady) {
