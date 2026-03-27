@@ -15,7 +15,6 @@ Minimum required versions -
 
 Trader Workstation -
 * You need an account with Interactive Brokers and minimum funds to use certain API features.
-  * e.g. Live market data requires both paid subscription and funds.
 * Download and install `Trader Workstation 10.44.1` (or higher).
 * Follow [instructions](https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#tws-config-api) to enable API use.
 
