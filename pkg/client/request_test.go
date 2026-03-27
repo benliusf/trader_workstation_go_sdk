@@ -23,8 +23,8 @@ func TestHistoricalDataRequest(t *testing.T) {
 		BarSize:    ONE_HOUR,
 		WhatToShow: TRADES,
 	}
-	req := NewHistoricalDataRequest(&ESender{}, 1, contr.Build(), params)
-	err := req.Send(ctx)
+	req := NewHistoricalDataRequest(&ESender{}, contr.Build(), params)
+	_, err := req.Send(ctx)
 	assert.NotNil(t, err)
 	assert.True(t, errors.Is(err, ErrInvalidParam))
 }

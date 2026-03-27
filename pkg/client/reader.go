@@ -111,7 +111,7 @@ func (e *EReader) handleNextValidId(b []byte, handler EHandler) error {
 		return err
 	}
 	status := e.twsClient.status
-	status.setNextValidId(*m.OrderId)
+	status.setNextOrderId(*m.OrderId)
 	if !status.isReady() {
 		status.setReady()
 	}

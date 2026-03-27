@@ -49,7 +49,7 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	accountData := client.NewAccountDataRequest(writer, cl.GetNextReqId(), "")
+	accountData := client.NewAccountDataRequest(writer, "")
 	for {
 		if err := accountData.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {

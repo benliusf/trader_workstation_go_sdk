@@ -55,13 +55,10 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	// Use the TWSClient to get the next valid request id which is used to send write requests.
-	reqId := cl.GetNextReqId()
-
 	// Create new request using the reqId.
-	accountSummary := client.NewAccountSummaryRequest(writer, reqId, "", []client.AccountSummaryTag{})
+	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{})
 	for {
-		if err := accountSummary.Send(ctx); err != nil {
+		if _, err := accountSummary.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)

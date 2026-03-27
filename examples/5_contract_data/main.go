@@ -54,9 +54,9 @@ func main() {
 		SetSecType(client.STOCK).
 		SetExchange(client.SMART).
 		SetPrimaryExch(client.NASDAQ)
-	contract := client.NewContractDataRequest(writer, cl.GetNextReqId(), bd.Build())
+	contract := client.NewContractDataRequest(writer, bd.Build())
 	for {
-		if err := contract.Send(ctx); err != nil {
+		if _, err := contract.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)

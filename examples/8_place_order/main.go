@@ -84,11 +84,11 @@ func main() {
 
 	// Request account data to verify it's paper trading.
 	// (This is not a required step for live trading.)
-	accountSummary := client.NewAccountSummaryRequest(writer, cl.GetNextReqId(), "", []client.AccountSummaryTag{
+	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{
 		client.AccountType,
 	})
 	for {
-		if err := accountSummary.Send(ctx); err != nil {
+		if _, err := accountSummary.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)
@@ -133,8 +133,8 @@ func main() {
 		SetQuantity(10).
 		SetTimeInForce(client.GTC).
 		Build()
-	placeOrder := client.NewPlaceOrderRequest(writer, cl.GetNextReqId(), contract, order)
-	if err := placeOrder.Send(ctx); err != nil {
+	placeOrder := client.NewPlaceOrderRequest(writer, contract, order)
+	if _, err := placeOrder.Send(ctx); err != nil {
 		panic(err)
 	}
 

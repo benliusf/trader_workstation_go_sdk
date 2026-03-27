@@ -5,6 +5,7 @@ import "sync"
 type clientState struct {
 	mu       sync.RWMutex
 	apiReady bool
+	reqId    int32
 	orderId  int32
 }
 
@@ -20,16 +21,30 @@ func (s *clientState) isReady() bool {
 	return s.apiReady
 }
 
-func (s *clientState) setNextValidId(id int32) {
+func (s *clientState) getNextReqId() int32 {
+	if !s.isReady() {
+		return -1
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	res := s.reqId
+	s.reqId++
+	return res
+}
+
+func (s *clientState) setNextOrderId(id int32) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.orderId = id
 }
 
-func (s *clientState) getNextValidId() int32 {
+func (s *clientState) getNextOrderId() int32 {
+	if !s.isReady() {
+		return -1
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	res := s.orderId
-	s.orderId += 1
+	s.orderId++
 	return res
 }

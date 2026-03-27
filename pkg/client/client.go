@@ -116,5 +116,9 @@ func (c *TWSClient) ServerVersion() int32 {
 }
 
 func (c *TWSClient) GetNextReqId() int32 {
-	return c.status.getNextValidId()
+	return c.status.getNextReqId()
+}
+
+func (c *TWSClient) GetNextOrderId() int32 {
+	return c.status.getNextOrderId()
 }

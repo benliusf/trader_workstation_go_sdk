@@ -24,8 +24,8 @@ func TestSender(t *testing.T) {
 		SetPrimaryExch(NASDAQ)
 
 	sender, _ := NewSender(cl)
-	req := NewPlaceOrderRequest(sender, 0, contr.Build(), &api.Order{})
-	err := req.Send(context.TODO())
+	req := NewPlaceOrderRequest(sender, contr.Build(), &api.Order{})
+	_, err := req.Send(context.TODO())
 	assert.NotNil(t, err)
 	assert.True(t, errors.Is(err, ErrNotAllowed))
 }

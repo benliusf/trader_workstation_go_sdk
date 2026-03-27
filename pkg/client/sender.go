@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
+	"reflect"
 
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/log"
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/send"
@@ -36,33 +37,52 @@ func (e *ESender) StartAPI() error {
 	return send.Write(e.twsClient.conn, req)
 }
 
-func (e *ESender) Send(ctx context.Context, m proto.Message) error {
+func (e *ESender) Send(ctx context.Context, m proto.Message) (int32, error) {
+	const (
+		requestId = "ReqId"
+		orderId   = "OrderId"
+	)
 	if err := ctx.Err(); err != nil {
-		return err
+		return -1, err
 	}
 	status := e.twsClient.status
 	if !status.isReady() {
-		return ErrClientNotReady
+		return -1, ErrClientNotReady
 	}
 	r := e.twsClient.privileges
 	if r == nil {
-		return fmt.Errorf("%w: client lacks privileges", ErrNotAllowed)
+		return -1, fmt.Errorf("%w: client lacks privileges", ErrNotAllowed)
 	}
+	if err := ValidateRequestACL(r, m); err != nil {
+		return -1, err
+	}
+	idFieldName := ""
 	switch m.(type) {
+	case *api.AccountSummaryRequest, *api.ContractDataRequest, *api.MarketDataRequest, *api.HistoricalDataRequest:
+		idFieldName = requestId
 	case *api.PlaceOrderRequest:
-		if !CanCreate(r.Orders) {
-			return ErrNoCreate
-		}
-	case *api.CancelOrderRequest:
-		if !CanDelete(r.Orders) {
-			return ErrNoDelete
-		}
-	case *api.GlobalCancelRequest:
-		if !CanDelete(r.Orders) {
-			return ErrNoDelete
-		}
-	default:
-		// noop
+		idFieldName = orderId
 	}
-	return send.Write(e.twsClient.conn, m)
+	if idFieldName == "" {
+		return -1, send.Write(e.twsClient.conn, m)
+	}
+	s := reflect.ValueOf(m)
+	if s.Kind() == reflect.Ptr {
+		s = s.Elem()
+	}
+	f := s.FieldByName(idFieldName)
+	if !f.IsValid() || !f.CanSet() {
+		return -1, fmt.Errorf("unable to set '%s'", idFieldName)
+	}
+	fPtr := reflect.New(f.Type().Elem())
+	var id int32 = -1
+	switch idFieldName {
+	case requestId:
+		id = e.twsClient.GetNextReqId()
+	case orderId:
+		id = e.twsClient.GetNextOrderId()
+	}
+	fPtr.Elem().SetInt(int64(id))
+	f.Set(fPtr)
+	return id, send.Write(e.twsClient.conn, m)
 }

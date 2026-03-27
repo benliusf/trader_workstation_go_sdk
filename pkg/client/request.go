@@ -15,10 +15,7 @@ type apiRequest[T proto.Message] struct {
 	proto  T
 }
 
-func (r *apiRequest[T]) Send(ctx context.Context) error {
-	if err := ctx.Err(); err != nil {
-		return err
-	}
+func (r *apiRequest[T]) Send(ctx context.Context) (int32, error) {
 	return r.sender.Send(ctx, r.proto)
 }
 
@@ -38,6 +35,13 @@ func NewNextValidIdRequest(s *ESender) *NextValidIdRequest {
 			},
 		},
 	}
+}
+
+func (r *NextValidIdRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 // AccountSummaryRequest.proto
@@ -114,7 +118,7 @@ type AccountSummaryRequest struct {
 	*apiRequest[*api.AccountSummaryRequest]
 }
 
-func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []AccountSummaryTag) *AccountSummaryRequest {
+func NewAccountSummaryRequest(s *ESender, group string, tags []AccountSummaryTag) *AccountSummaryRequest {
 	if group == "" {
 		group = All
 	}
@@ -130,7 +134,6 @@ func NewAccountSummaryRequest(s *ESender, reqId int32, group string, tags []Acco
 		apiRequest: &apiRequest[*api.AccountSummaryRequest]{
 			sender: s,
 			proto: &api.AccountSummaryRequest{
-				ReqId: &reqId,
 				Group: &group,
 				Tags:  &tagsConcat,
 			},
@@ -144,7 +147,7 @@ type AccountDataRequest struct {
 	*apiRequest[*api.AccountDataRequest]
 }
 
-func NewAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
+func NewAccountDataRequest(s *ESender, accountId string) *AccountDataRequest {
 	return &AccountDataRequest{
 		apiRequest: &apiRequest[*api.AccountDataRequest]{
 			sender: s,
@@ -156,11 +159,18 @@ func NewAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDa
 	}
 }
 
+func (r *AccountDataRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 type CancelAccountDataRequest struct {
 	*apiRequest[*api.AccountDataRequest]
 }
 
-func NewCancelAccountDataRequest(s *ESender, reqId int32, accountId string) *AccountDataRequest {
+func NewCancelAccountDataRequest(s *ESender, accountId string) *AccountDataRequest {
 	return &AccountDataRequest{
 		apiRequest: &apiRequest[*api.AccountDataRequest]{
 			sender: s,
@@ -172,18 +182,24 @@ func NewCancelAccountDataRequest(s *ESender, reqId int32, accountId string) *Acc
 	}
 }
 
+func (r *CancelAccountDataRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // ContractDataRequest.proto
 
 type ContractDataRequest struct {
 	*apiRequest[*api.ContractDataRequest]
 }
 
-func NewContractDataRequest(s *ESender, reqId int32, contr *api.Contract) *ContractDataRequest {
+func NewContractDataRequest(s *ESender, contr *api.Contract) *ContractDataRequest {
 	return &ContractDataRequest{
 		apiRequest: &apiRequest[*api.ContractDataRequest]{
 			sender: s,
 			proto: &api.ContractDataRequest{
-				ReqId:    &reqId,
 				Contract: contr,
 			},
 		},
@@ -216,18 +232,24 @@ func NewMarketDataTypeRequest(s *ESender, l MarketDataLevel) *MarketDataTypeRequ
 	}
 }
 
+func (r *MarketDataTypeRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // MarketDataRequest.proto
 
 type MarketDataRequest struct {
 	*apiRequest[*api.MarketDataRequest]
 }
 
-func NewMarketDataRequest(s *ESender, reqId int32, contr *api.Contract) *MarketDataRequest {
+func NewMarketDataRequest(s *ESender, contr *api.Contract) *MarketDataRequest {
 	return &MarketDataRequest{
 		apiRequest: &apiRequest[*api.MarketDataRequest]{
 			sender: s,
 			proto: &api.MarketDataRequest{
-				ReqId:              &reqId,
 				Contract:           contr,
 				Snapshot:           boolPtr(false),
 				RegulatorySnapshot: boolPtr(false),
@@ -243,14 +265,13 @@ type HistoricalDataRequest struct {
 	params *QueryParams
 }
 
-func NewHistoricalDataRequest(s *ESender, reqId int32, contr *api.Contract, params *QueryParams) *HistoricalDataRequest {
+func NewHistoricalDataRequest(s *ESender, contr *api.Contract, params *QueryParams) *HistoricalDataRequest {
 	const tsFormat = "20060102 15:04:05 US/Eastern"
 	loc, _ := time.LoadLocation("US/Eastern")
 	return &HistoricalDataRequest{
 		apiRequest: &apiRequest[*api.HistoricalDataRequest]{
 			sender: s,
 			proto: &api.HistoricalDataRequest{
-				ReqId:          &reqId,
 				Contract:       contr,
 				EndDateTime:    strPtr(params.EndTime.In(loc).Format(tsFormat)),
 				Duration:       strPtr(params.Duration().String()),
@@ -265,15 +286,15 @@ func NewHistoricalDataRequest(s *ESender, reqId int32, contr *api.Contract, para
 	}
 }
 
-func (r *HistoricalDataRequest) Send(ctx context.Context) error {
+func (r *HistoricalDataRequest) Send(ctx context.Context) (int32, error) {
 	now := time.Now()
 	if r.params != nil {
 		if r.params.StartTime.Before(now.Add(-720 * 6 * time.Hour)) {
-			return fmt.Errorf("%w: start time out of range", ErrInvalidParam)
+			return -1, fmt.Errorf("%w: start time out of range", ErrInvalidParam)
 		}
 		timeRange := r.params.EndTime.Sub(r.params.StartTime)
 		if timeRange.Hours() > (7 * 24) {
-			return fmt.Errorf("%w: time range cannot exceed one week", ErrInvalidParam)
+			return -1, fmt.Errorf("%w: time range cannot exceed one week", ErrInvalidParam)
 		}
 	}
 	return r.apiRequest.Send(ctx)
@@ -294,18 +315,24 @@ func NewPositionsRequest(s *ESender) *PositionsRequest {
 	}
 }
 
+func (r *PositionsRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // PlaceOrderRequest.proto
 
 type PlaceOrderRequest struct {
 	*apiRequest[*api.PlaceOrderRequest]
 }
 
-func NewPlaceOrderRequest(s *ESender, reqId int32, contr *api.Contract, order *api.Order) *PlaceOrderRequest {
+func NewPlaceOrderRequest(s *ESender, contr *api.Contract, order *api.Order) *PlaceOrderRequest {
 	return &PlaceOrderRequest{
 		&apiRequest[*api.PlaceOrderRequest]{
 			sender: s,
 			proto: &api.PlaceOrderRequest{
-				OrderId:  &reqId,
 				Contract: contr,
 				Order:    order,
 			},
@@ -330,6 +357,13 @@ func NewCancelOrderRequest(s *ESender, orderId int32) *CancelOrderRequest {
 	}
 }
 
+func (r *CancelOrderRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GlobalCancelRequest.proto
 
 type GlobalCancelRequest struct {
@@ -343,6 +377,13 @@ func NewGlobalCancelRequest(s *ESender) *GlobalCancelRequest {
 			proto:  &api.GlobalCancelRequest{},
 		},
 	}
+}
+
+func (r *GlobalCancelRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 // OpenOrdersRequest.proto
@@ -360,6 +401,13 @@ func NewOpenOrdersRequest(s *ESender) *OpenOrdersRequest {
 	}
 }
 
+func (r *OpenOrdersRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
+}
+
 // AllOpenOrdersRequest.proto
 
 type AllOpenOrdersRequest struct {
@@ -373,4 +421,11 @@ func NewAllOpenOrdersRequest(s *ESender) *AllOpenOrdersRequest {
 			proto:  &api.AllOpenOrdersRequest{},
 		},
 	}
+}
+
+func (r *AllOpenOrdersRequest) Send(ctx context.Context) error {
+	if _, err := r.apiRequest.Send(ctx); err != nil {
+		return err
+	}
+	return nil
 }

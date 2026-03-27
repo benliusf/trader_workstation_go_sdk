@@ -88,11 +88,11 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	accountSummary := client.NewAccountSummaryRequest(writer, cl.GetNextReqId(), "", []client.AccountSummaryTag{
+	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{
 		client.AccountType,
 	})
 	for {
-		if err := accountSummary.Send(ctx); err != nil {
+		if _, err := accountSummary.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)
@@ -160,8 +160,8 @@ func main() {
 			SetQuantity(qty).
 			SetTimeInForce(client.DAY_ONLY).
 			SetTransmit().Build()
-		placeOrder := client.NewPlaceOrderRequest(writer, cl.GetNextReqId(), contr, order)
-		if err := placeOrder.Send(ctx); err != nil {
+		placeOrder := client.NewPlaceOrderRequest(writer, contr, order)
+		if _, err := placeOrder.Send(ctx); err != nil {
 			panic(err)
 		}
 		return nil

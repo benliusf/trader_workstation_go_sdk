@@ -54,15 +54,14 @@ func main() {
 	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
 
 	// Request for AAPL stock symbol
-
-	aaplTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(),
+	aaplTicker := client.NewMarketDataRequest(writer,
 		client.NewContractBuilder().
 			SetSymbol("AAPL").
 			SetSecType(client.STOCK).
 			SetExchange(client.SMART).
 			SetPrimaryExch(client.NASDAQ).Build())
 	// Request for NVDA stock symbol
-	nvdaTicker := client.NewMarketDataRequest(writer, cl.GetNextReqId(),
+	nvdaTicker := client.NewMarketDataRequest(writer,
 		client.NewContractBuilder().
 			SetSymbol("NVDA").
 			SetSecType(client.STOCK).
@@ -77,10 +76,10 @@ func main() {
 			}
 			panic(err)
 		}
-		if err := aaplTicker.Send(ctx); err != nil {
+		if _, err := aaplTicker.Send(ctx); err != nil {
 			panic(err)
 		}
-		if err := nvdaTicker.Send(ctx); err != nil {
+		if _, err := nvdaTicker.Send(ctx); err != nil {
 			panic(err)
 		}
 		break

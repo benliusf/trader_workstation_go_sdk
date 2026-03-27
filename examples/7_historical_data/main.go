@@ -62,9 +62,9 @@ func main() {
 		BarSize:    client.ONE_HOUR,
 		WhatToShow: client.TRADES,
 	}
-	aaplTicker := client.NewHistoricalDataRequest(writer, cl.GetNextReqId(), bd.Build(), params)
+	aaplTicker := client.NewHistoricalDataRequest(writer, bd.Build(), params)
 	for {
-		if err := aaplTicker.Send(ctx); err != nil {
+		if _, err := aaplTicker.Send(ctx); err != nil {
 			if errors.Is(err, client.ErrClientNotReady) {
 				logger.Warn("client not ready, retrying")
 				time.Sleep(1 * time.Second)
