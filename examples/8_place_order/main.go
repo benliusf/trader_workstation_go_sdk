@@ -14,6 +14,14 @@ import (
 	api "github.com/benliusf/trader_workstation_go_sdk/api/v104401"
 )
 
+// An example to demonstrate an API call to Place Open Order -
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#place-order
+//
+// An "open order" is a order in pending status that won't be fulfilled unless "transmitted".
+//
+// This example creates an open order to buy "AAPL" stock and cancels it.
+
+// Implement a custom handler to capture the response for the order.
 type thisHandler struct {
 	examples.ExampleHandler
 
@@ -82,8 +90,8 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	// Request account data to verify it's paper trading.
-	// (This is not a required step for live trading.)
+	// This is for testing purposes only.
+	// We request account data to verify it's paper trading.
 	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{
 		client.AccountType,
 	})
@@ -121,8 +129,8 @@ func main() {
 		logger.Info("account_id=%v", a.GetAccount())
 	}
 
-	// Place order to buy AAPL stock.
-	// The order will be in pending status because SetTransmit() is not called.
+	// Place open order to buy "AAPL" stock.
+	// The order will be pending because SetTransmit() is not called.
 	contract := client.NewContractBuilder().
 		SetSymbol("AAPL").
 		SetSecType(client.STOCK).
@@ -132,14 +140,15 @@ func main() {
 		SetAction(client.BUY).
 		SetQuantity(10).
 		SetTimeInForce(client.GTC).
+		//SetTransmit().
 		Build()
 	placeOrder := client.NewPlaceOrderRequest(writer, contract, order)
 	if _, err := placeOrder.Send(ctx); err != nil {
 		panic(err)
 	}
 
-	// Request open orders to find the order_id from the above placeOrder.
-	// Below wait for the response and cancel the open order.
+	// Get open orders to find the order_id from the above placeOrder.
+	// Wait for the response and cancel the open order.
 	openOrders := client.NewAllOpenOrdersRequest(writer)
 	if err := openOrders.Send(ctx); err != nil {
 		panic(err)

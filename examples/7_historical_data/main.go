@@ -10,6 +10,9 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 )
 
+// An example to demonstrate an API call to Historical Market Data -
+//
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#hist-md
 func main() {
 	conf := client.TWSConfig{
 		ClientId:     0,
@@ -49,19 +52,20 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
+	// Params for historical data, ie. time range.
 	now := time.Now()
 	startTime := now.Add(-24 * time.Hour)
-	bd := client.NewContractBuilder().
-		SetSymbol("AAPL").
-		SetSecType(client.STOCK).
-		SetExchange(client.SMART).
-		SetPrimaryExch(client.NASDAQ)
 	params := &client.QueryParams{
 		StartTime:  startTime,
 		EndTime:    now,
 		BarSize:    client.ONE_HOUR,
 		WhatToShow: client.TRADES,
 	}
+	bd := client.NewContractBuilder().
+		SetSymbol("AAPL").
+		SetSecType(client.STOCK).
+		SetExchange(client.SMART).
+		SetPrimaryExch(client.NASDAQ)
 	aaplTicker := client.NewHistoricalDataRequest(writer, bd.Build(), params)
 	for {
 		if _, err := aaplTicker.Send(ctx); err != nil {

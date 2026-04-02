@@ -10,6 +10,9 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 )
 
+// An example to demonstrate an API call to Delayed Market Data -
+//
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#delayed-market-data
 func main() {
 	conf := client.TWSConfig{
 		ClientId:     0,
@@ -53,14 +56,14 @@ func main() {
 	//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#delayed-market-data
 	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
 
-	// Request for GOOG stock symbol
+	// Request for `GOOG` stock symbol
 	googTicker := client.NewMarketDataRequest(writer,
 		client.NewContractBuilder().
 			SetSymbol("GOOG").
 			SetSecType(client.STOCK).
 			SetExchange(client.SMART).
 			SetPrimaryExch(client.NASDAQ).Build())
-	// Request for NVDA stock symbol
+	// Request for `NVDA` stock symbol
 	nvdaTicker := client.NewMarketDataRequest(writer,
 		client.NewContractBuilder().
 			SetSymbol("NVDA").

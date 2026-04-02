@@ -42,11 +42,11 @@ func (e *EReader) Read(ctx context.Context, handler EHandler) error {
 		default:
 			msg, err := read.Next(e.twsClient.conn)
 			if err != nil {
-				e.logger.Error("%v", err)
+				e.logger.Error("failed to read next message: %v", err)
 				continue
 			}
 			if err := e.Process(msg, handler); err != nil {
-				e.logger.Error("%v", err)
+				e.logger.Error("failed to process message: %v", err)
 			}
 		}
 	}

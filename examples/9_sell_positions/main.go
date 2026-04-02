@@ -15,6 +15,11 @@ import (
 	api "github.com/benliusf/trader_workstation_go_sdk/api/v104401"
 )
 
+// An example to demonstrate an API call to Positions -
+//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#positions
+//
+// In this example, we get all the current positions in the account and create "SELL" orders for all the positions.
+
 type thisHandler struct {
 	examples.ExampleHandler
 
@@ -146,7 +151,7 @@ func main() {
 		logger.Info("received all positions")
 	}
 
-	// Function to close a position. It places a new order to SELL all the position quantity.
+	// Function to close a position. It places a "SELL" order on the position.
 	var sell func(p *api.Position) error = func(p *api.Position) error {
 		contr := &api.Contract{
 			ConId: p.GetContract().ConId,
@@ -172,5 +177,6 @@ func main() {
 		}
 		logger.Info("sold position in %v", *p.GetContract().Symbol)
 	}
+
 	time.Sleep(5 * time.Second)
 }

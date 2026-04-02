@@ -10,7 +10,7 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 )
 
-// An example to demonstrate a API call to Account Summary -
+// An example to demonstrate an API call to Account Summary -
 //
 //	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#sync-account-summary
 func main() {

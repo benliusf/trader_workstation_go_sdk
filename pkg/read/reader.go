@@ -34,8 +34,14 @@ func ServerVersion(conn *net.TWSConn) (*ServerVersionResponse, error) {
 		return nil, err
 	}
 	var serverTs int64
-	tsStr, _ := msg.ReadStr()
-	ts, _ := time.Parse(tsFormat, tsStr)
+	tsStr, err := msg.ReadStr()
+	if err != nil {
+		return nil, err
+	}
+	ts, err := time.Parse(tsFormat, tsStr)
+	if err != nil {
+		return nil, err
+	}
 	if !ts.IsZero() {
 		serverTs = ts.Unix()
 	}

@@ -95,7 +95,7 @@ func (c *TWSClient) Connect() (err error) {
 func (c *TWSClient) Disconnect() (err error) {
 	defer func() {
 		if err != nil {
-			c.logger.Error("error during disconnect: %v", err)
+			c.logger.Error("disconnect error: %v", err)
 			return
 		}
 		c.logger.Info("client=%d disconnected", c.clientId)

@@ -10,10 +10,11 @@ import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 )
 
-// This example demonstrates the read and write functionality of the SDK to interact with TWS API.
-// All responses are printed to stdout from the test handler defined in example_handler.go
-// The code calls the writer to make a single request for the NextValidId as documented -
+// An example to demonstrate read and write functionality by making a request for the NextValidId -
 //	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#next-valid-id
+//
+// The following response will be printed to stdout via the test handler -
+//		2026/04/01 15:51:45 [INFO] received next valid id: 10
 
 func main() {
 	conf := client.TWSConfig{
@@ -34,7 +35,7 @@ func main() {
 	}
 	ctx, done := context.WithCancel(context.Background())
 
-	// Use test handler from example_handler.go to print all the messages into stdout.
+	// Use test handler from example_handler.go to print all the messages onto stdout.
 	handler := examples.NewExampleHandler(logger)
 
 	// Create the reader to pull messages from client connection.
@@ -48,13 +49,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// You must explicitly send this request to inform the server that this connection serves API calls.
+	// You must explicitly call this to inform the server that this connection serves API calls.
 	if err := writer.StartAPI(); err != nil {
 		panic(err)
 	}
 
 	// Run the reader asynchronously to continuously listen for new messages.
-	// Each received message is passed to the handler for processing.
+	// Every message is passed to the handler for processing.
 	go func() {
 		if err := reader.Read(ctx, handler); err != nil {
 			logger.Error(fmt.Sprintf("read error: %v", err))
@@ -62,8 +63,8 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}()
 
-	// Make a request to the server for the NextValidId.
-	// The send() is inside a loop to retry until the server is ready to accept API calls.
+	// Make and send request for NextValidId.
+	// The send() is inside a retry loop until the server is ready to accept API calls.
 	nextValidId := client.NewNextValidIdRequest(writer)
 	for {
 		if err := nextValidId.Send(ctx); err != nil {

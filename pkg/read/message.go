@@ -1,7 +1,6 @@
 package read
 
 import (
-	"fmt"
 	"io"
 	"strconv"
 	"sync"
@@ -16,7 +15,7 @@ type Message struct {
 
 func MessageFromBytes(b []byte) (*Message, error) {
 	if len(b) == 0 {
-		return nil, fmt.Errorf("empty bytes")
+		return nil, io.EOF
 	}
 	return &Message{
 		body: b,
