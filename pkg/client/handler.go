@@ -42,6 +42,10 @@ type EHandler interface {
 
 	OrderStatus(m *api.OrderStatus) error
 
+	ExecutionDetails(m *api.ExecutionDetails) error
+
+	ExecutionDetailsEnd(m *api.ExecutionDetailsEnd) error
+
 	ErrorMessage(m *api.ErrorMessage) error
 
 	Unsupported(m *read.Message) error

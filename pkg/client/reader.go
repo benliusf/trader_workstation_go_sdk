@@ -98,6 +98,10 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 		return e.handleOpenOrdersEnd(b, handler)
 	case read.ORDER_STATUS:
 		return e.handleOrderStatus(b, handler)
+	case read.EXECUTION_DATA:
+		return e.handleExecutionDetails(b, handler)
+	case read.EXECUTION_DATA_END:
+		return e.handleExecutionDetailsEnd(b, handler)
 	case read.ERR_MSG:
 		return e.handleErrorMessage(b, handler)
 	default:
@@ -252,6 +256,22 @@ func (e *EReader) handleOrderStatus(b []byte, handler EHandler) error {
 		return err
 	}
 	return handler.OrderStatus(m)
+}
+
+func (e *EReader) handleExecutionDetails(b []byte, handler EHandler) error {
+	m := &api.ExecutionDetails{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ExecutionDetails(m)
+}
+
+func (e *EReader) handleExecutionDetailsEnd(b []byte, handler EHandler) error {
+	m := &api.ExecutionDetailsEnd{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ExecutionDetailsEnd(m)
 }
 
 func (e *EReader) handleErrorMessage(b []byte, handler EHandler) error {

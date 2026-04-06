@@ -128,6 +128,18 @@ func (h *ExampleHandler) OrderStatus(m *api.OrderStatus) error {
 	return nil
 }
 
+func (h *ExampleHandler) ExecutionDetails(m *api.ExecutionDetails) error {
+	d, _ := protojson.Marshal(m)
+	h.Logger.Info("received execution details: %s", d)
+	return nil
+}
+
+func (h *ExampleHandler) ExecutionDetailsEnd(m *api.ExecutionDetailsEnd) error {
+	d, _ := protojson.Marshal(m)
+	h.Logger.Info("received execution details end: %s", d)
+	return nil
+}
+
 func (h *ExampleHandler) ErrorMessage(m *api.ErrorMessage) error {
 	h.Logger.Info("received error message: %v", m.GetErrorMsg())
 	return nil

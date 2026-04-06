@@ -429,3 +429,18 @@ func (r *AllOpenOrdersRequest) Send(ctx context.Context) error {
 	}
 	return nil
 }
+
+// ExecutionRequest.proto
+
+type ExecutionRequest struct {
+	*apiRequest[*api.ExecutionRequest]
+}
+
+func NewExecutionRequest(s *ESender) *ExecutionRequest {
+	return &ExecutionRequest{
+		&apiRequest[*api.ExecutionRequest]{
+			sender: s,
+			proto:  &api.ExecutionRequest{},
+		},
+	}
+}

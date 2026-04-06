@@ -51,6 +51,11 @@ func (b *ContractBuilder) Build() *api.Contract {
 	return b.c
 }
 
+func (b *ContractBuilder) SetId(v int32) *ContractBuilder {
+	b.c.ConId = int32Ptr(v)
+	return b
+}
+
 func (b *ContractBuilder) SetSymbol(v string) *ContractBuilder {
 	b.c.Symbol = &v
 	return b

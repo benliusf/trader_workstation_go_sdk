@@ -153,9 +153,9 @@ func main() {
 
 	// Function to close a position. It places a "SELL" order on the position.
 	var sell func(p *api.Position) error = func(p *api.Position) error {
-		contr := &api.Contract{
-			ConId: p.GetContract().ConId,
-		}
+		contr := client.NewContractBuilder().
+			SetExchange(client.SMART).
+			SetId(p.GetContract().GetConId()).Build()
 		qty, err := strconv.ParseFloat(p.GetPosition(), 64)
 		if err != nil {
 			return err

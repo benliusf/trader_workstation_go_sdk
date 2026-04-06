@@ -42,6 +42,8 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 		msgId = REQ_OPEN_ORDERS
 	case *api.AllOpenOrdersRequest:
 		msgId = REQ_ALL_OPEN_ORDERS
+	case *api.ExecutionRequest:
+		msgId = REQ_EXECUTIONS
 	default:
 		return fmt.Errorf("'%T' is not implemented", t)
 	}

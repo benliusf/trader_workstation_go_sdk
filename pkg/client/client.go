@@ -115,10 +115,10 @@ func (c *TWSClient) ServerVersion() int32 {
 	return c.serverVersion
 }
 
-func (c *TWSClient) GetNextReqId() int32 {
+func (c *TWSClient) NextReqId() int32 {
 	return c.status.getNextReqId()
 }
 
-func (c *TWSClient) GetNextOrderId() int32 {
+func (c *TWSClient) NextOrderId() int32 {
 	return c.status.getNextOrderId()
 }

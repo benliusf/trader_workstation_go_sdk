@@ -58,7 +58,7 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) (int32, error) {
 	}
 	idFieldName := ""
 	switch m.(type) {
-	case *api.AccountSummaryRequest, *api.ContractDataRequest, *api.MarketDataRequest, *api.HistoricalDataRequest:
+	case *api.AccountSummaryRequest, *api.ContractDataRequest, *api.MarketDataRequest, *api.HistoricalDataRequest, *api.ExecutionRequest:
 		idFieldName = requestId
 	case *api.PlaceOrderRequest:
 		idFieldName = orderId
@@ -78,9 +78,9 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) (int32, error) {
 	var id int32 = -1
 	switch idFieldName {
 	case requestId:
-		id = e.twsClient.GetNextReqId()
+		id = e.twsClient.NextReqId()
 	case orderId:
-		id = e.twsClient.GetNextOrderId()
+		id = e.twsClient.NextOrderId()
 	}
 	fPtr.Elem().SetInt(int64(id))
 	f.Set(fPtr)
