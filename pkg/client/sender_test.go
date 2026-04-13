@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	api "github.com/benliusf/trader_workstation_go_sdk/api/v104401"
@@ -26,6 +25,5 @@ func TestSender(t *testing.T) {
 	sender, _ := NewSender(cl)
 	req := NewPlaceOrderRequest(sender, contr.Build(), &api.Order{})
 	_, err := req.Send(context.TODO())
-	assert.NotNil(t, err)
-	assert.True(t, errors.Is(err, ErrNotAllowed))
+	assert.ErrorIs(t, err, ErrNotAllowed)
 }

@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
@@ -25,6 +24,5 @@ func TestHistoricalDataRequest(t *testing.T) {
 	}
 	req := NewHistoricalDataRequest(&ESender{}, contr.Build(), params)
 	_, err := req.Send(ctx)
-	assert.NotNil(t, err)
-	assert.True(t, errors.Is(err, ErrInvalidParam))
+	assert.ErrorIs(t, err, ErrInvalidParam)
 }

@@ -22,22 +22,22 @@ func TestMessage(t *testing.T) {
 	}
 
 	val1, err := msg.ReadStr()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "hello mars", val1)
 	assert.Equal(t, 11, msg.idx)
 
 	val2, err := msg.ReadMsgId()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, int32(222)-PROTOBUF_MSG_ID, val2)
 	assert.Equal(t, 16, msg.idx)
 
 	val3, err := msg.ReadStr()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, "from earth", val3)
 	assert.Equal(t, 26, msg.idx)
 
 	val4, err := msg.ReadMsgId()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 	assert.Equal(t, int32(222)-PROTOBUF_MSG_ID, val4)
 }
 
