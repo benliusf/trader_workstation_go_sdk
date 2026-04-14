@@ -15,11 +15,7 @@ const (
 	MAX_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
 )
 
-var verHeader string
-
-func init() {
-	verHeader = fmt.Sprintf("%v..%v", MIN_VER, MAX_VER)
-}
+var verHeader string = fmt.Sprintf("%v..%v", MIN_VER, MAX_VER)
 
 type TWSConn struct {
 	ReadTimeout  time.Duration
