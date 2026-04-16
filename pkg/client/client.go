@@ -15,16 +15,11 @@ type TWSConfig struct {
 	Port         string
 	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
-	Privileges   *Role
+	Privileges   Role
 }
 
 type TWSClient struct {
-	clientId     int32
-	host         string
-	port         string
-	readTimeout  time.Duration
-	writeTimeout time.Duration
-	privileges   *Role
+	conf TWSConfig
 
 	logger log.Logger
 
@@ -43,24 +38,18 @@ func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {
 		return nil, fmt.Errorf("port not defined!")
 	}
 	cl := &TWSClient{
-		clientId:     conf.ClientId,
-		host:         conf.Host,
-		port:         conf.Port,
-		readTimeout:  conf.ReadTimeout,
-		writeTimeout: conf.WriteTimeout,
-		privileges:   conf.Privileges,
-		logger:       logger,
-		status:       &clientState{},
+		conf:   conf,
+		logger: logger,
+		status: &clientState{},
 	}
-	if cl.readTimeout <= 0 {
-		cl.readTimeout = 10 * time.Second
+	if cl.conf.ReadTimeout <= 0 {
+		cl.conf.ReadTimeout = 10 * time.Second
 	}
-	if cl.writeTimeout <= 0 {
-		cl.writeTimeout = 10 * time.Second
+	if cl.conf.WriteTimeout <= 0 {
+		cl.conf.WriteTimeout = 10 * time.Second
 	}
-	if cl.privileges == nil {
-		tmp := ReadOnly()
-		cl.privileges = &tmp
+	if cl.conf.Privileges.None() {
+		cl.conf.Privileges = ReadOnly()
 	}
 	if cl.logger == nil {
 		cl.logger = &log.EmptyLogger{}
@@ -70,15 +59,15 @@ func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {
 
 func (c *TWSClient) Connect() (err error) {
 	conn := &net.TWSConn{
-		ReadTimeout:  c.readTimeout,
-		WriteTimeout: c.writeTimeout,
+		ReadTimeout:  c.conf.ReadTimeout,
+		WriteTimeout: c.conf.WriteTimeout,
 	}
 	defer func() {
 		if err != nil {
 			c.Disconnect()
 		}
 	}()
-	addr := fmt.Sprintf("%v:%v", c.host, c.port)
+	addr := fmt.Sprintf("%v:%v", c.conf.Host, c.conf.Port)
 	if err := conn.Open(addr); err != nil {
 		return err
 	}
@@ -88,7 +77,8 @@ func (c *TWSClient) Connect() (err error) {
 		return fmt.Errorf("failed to get server version: %v", err)
 	}
 	c.serverVersion = res.ServerVersion
-	c.logger.Info("client=%d connected to %v ver=%d ts=%v", c.clientId, addr, c.serverVersion, time.Unix(res.Timestamp, 0))
+	c.logger.Info("client=%d connected to %s ver=%d ts=%v",
+		c.conf.ClientId, addr, c.serverVersion, time.Unix(res.Timestamp, 0))
 	return nil
 }
 
@@ -98,7 +88,7 @@ func (c *TWSClient) Disconnect() (err error) {
 			c.logger.Error("disconnect error: %v", err)
 			return
 		}
-		c.logger.Info("client=%d disconnected", c.clientId)
+		c.logger.Info("client=%d disconnected", c.conf.ClientId)
 	}()
 	if c != nil &&
 		c.conn != nil {
@@ -108,7 +98,7 @@ func (c *TWSClient) Disconnect() (err error) {
 }
 
 func (c *TWSClient) ClientId() int32 {
-	return c.clientId
+	return c.conf.ClientId
 }
 
 func (c *TWSClient) ServerVersion() int32 {

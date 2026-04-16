@@ -9,20 +9,20 @@ import (
 )
 
 func TestHistoricalDataRequest(t *testing.T) {
-	ctx := context.TODO()
 	now := time.Now()
 	contr := NewContractBuilder().
 		SetSymbol("AAPL").
 		SetSecType(STOCK).
 		SetExchange(SMART).
-		SetPrimaryExch(NASDAQ)
+		SetPrimaryExch(NASDAQ).Build()
 	params := &QueryParams{
 		StartTime:  now.Add(-720 * 7 * time.Hour),
 		EndTime:    now.Add(-720 * 6 * time.Hour),
 		BarSize:    ONE_HOUR,
 		WhatToShow: TRADES,
 	}
-	req := NewHistoricalDataRequest(&ESender{}, contr.Build(), params)
-	_, err := req.Send(ctx)
+	req := NewHistoricalDataRequest(&ESender{}, contr, params)
+
+	_, err := req.Send(context.TODO())
 	assert.ErrorIs(t, err, ErrInvalidParam)
 }

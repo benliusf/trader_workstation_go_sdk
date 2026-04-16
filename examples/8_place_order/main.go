@@ -50,7 +50,7 @@ func main() {
 		Port:         "7497",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
-		Privileges:   &rw,
+		Privileges:   rw,
 	}
 	logger := examples.NewExampleLogger()
 	cl, err := client.NewClient(conf, logger)

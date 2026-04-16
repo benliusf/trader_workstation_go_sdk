@@ -32,7 +32,7 @@ func (e *ESender) StartAPI() error {
 		return nil
 	}
 	req := &api.StartApiRequest{
-		ClientId: &e.twsClient.clientId,
+		ClientId: &e.twsClient.conf.ClientId,
 	}
 	return send.Write(e.twsClient.conn, req)
 }
@@ -49,8 +49,8 @@ func (e *ESender) Send(ctx context.Context, m proto.Message) (int32, error) {
 	if !status.isReady() {
 		return -1, ErrClientNotReady
 	}
-	r := e.twsClient.privileges
-	if r == nil {
+	r := e.twsClient.conf.Privileges
+	if r.None() {
 		return -1, fmt.Errorf("%w: client lacks privileges", ErrNotAllowed)
 	}
 	if err := ValidateRequestACL(r, m); err != nil {

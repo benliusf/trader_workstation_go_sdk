@@ -29,6 +29,9 @@ func TestPermissions(t *testing.T) {
 }
 
 func TestRole(t *testing.T) {
+	none := Role{}
+	assert.True(t, none.None())
+
 	readOnly := ReadOnly()
 	assert.True(t, CanRead(readOnly.Orders))
 	assert.False(t, CanCreate(readOnly.Orders))

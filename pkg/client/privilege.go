@@ -33,6 +33,10 @@ type ACL struct {
 
 type Role ACL
 
+func (r Role) None() bool {
+	return r == Role{}
+}
+
 func ReadOnly() Role {
 	return Role{
 		Orders: Read,
@@ -45,7 +49,7 @@ func ReadAndWrite() Role {
 	}
 }
 
-func ValidateRequestACL(r *Role, m proto.Message) error {
+func ValidateRequestACL(r Role, m proto.Message) error {
 	switch m.(type) {
 	case *api.PlaceOrderRequest:
 		if !CanCreate(r.Orders) {

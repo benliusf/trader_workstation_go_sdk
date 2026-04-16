@@ -52,14 +52,13 @@ func (h *thisHandler) PositionEnd(m *api.PositionEnd) error {
 }
 
 func main() {
-	rw := client.ReadAndWrite()
 	conf := client.TWSConfig{
 		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
 		ReadTimeout:  2 * time.Second,
 		WriteTimeout: 2 * time.Second,
-		Privileges:   &rw,
+		Privileges:   client.ReadAndWrite(),
 	}
 	logger := examples.NewExampleLogger()
 	cl, err := client.NewClient(conf, logger)
