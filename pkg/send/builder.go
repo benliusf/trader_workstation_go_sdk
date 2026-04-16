@@ -30,7 +30,7 @@ func (b *builder) build() ([]byte, error) {
 		return nil, fmt.Errorf("failed to write msgId=%d: %w", b.msgId, err)
 	}
 	if _, err := b.buf.Write(b.msgBytes); err != nil {
-		return nil, fmt.Errorf("failed to write bytes: %w", err)
+		return nil, fmt.Errorf("failed to write body: %w", err)
 	}
 	return b.buf.Bytes(), nil
 }
