@@ -2,50 +2,46 @@ package send
 
 import (
 	"fmt"
+	"reflect"
 
 	api "github.com/benliusf/trader_workstation_go_sdk/api/v104401"
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/net"
 	"google.golang.org/protobuf/proto"
 )
 
+var msgIdMap map[reflect.Type]int32 = map[reflect.Type]int32{}
+
+func init() {
+	ids := map[proto.Message]int32{
+		&api.StartApiRequest{}:       START_API,
+		&api.IdsRequest{}:            REQ_IDS,
+		&api.AccountSummaryRequest{}: REQ_ACCOUNT_SUMMARY,
+		&api.AccountDataRequest{}:    REQ_ACCT_DATA,
+		&api.ContractDataRequest{}:   REQ_CONTRACT_DATA,
+		&api.MarketDataTypeRequest{}: REQ_MARKET_DATA_TYPE,
+		&api.MarketDataRequest{}:     REQ_MKT_DATA,
+		&api.HistoricalDataRequest{}: REQ_HISTORICAL_DATA,
+		&api.PositionsRequest{}:      REQ_POSITIONS,
+		&api.PlaceOrderRequest{}:     PLACE_ORDER,
+		&api.CancelOrderRequest{}:    CANCEL_ORDER,
+		&api.GlobalCancelRequest{}:   REQ_GLOBAL_CANCEL,
+		&api.OpenOrdersRequest{}:     REQ_OPEN_ORDERS,
+		&api.AllOpenOrdersRequest{}:  REQ_ALL_OPEN_ORDERS,
+		&api.ExecutionRequest{}:      REQ_EXECUTIONS,
+	}
+	for k, v := range ids {
+		msgIdMap[reflect.TypeOf(k)] = v
+	}
+}
+
 func Write(conn *net.TWSConn, m proto.Message) error {
 	if m == nil {
 		return fmt.Errorf("nil message")
 	}
-	var msgId int32
-	switch t := m.(type) {
-	case *api.StartApiRequest:
-		msgId = START_API
-	case *api.IdsRequest:
-		msgId = REQ_IDS
-	case *api.AccountSummaryRequest:
-		msgId = REQ_ACCOUNT_SUMMARY
-	case *api.AccountDataRequest:
-		msgId = REQ_ACCT_DATA
-	case *api.ContractDataRequest:
-		msgId = REQ_CONTRACT_DATA
-	case *api.MarketDataTypeRequest:
-		msgId = REQ_MARKET_DATA_TYPE
-	case *api.MarketDataRequest:
-		msgId = REQ_MKT_DATA
-	case *api.HistoricalDataRequest:
-		msgId = REQ_HISTORICAL_DATA
-	case *api.PositionsRequest:
-		msgId = REQ_POSITIONS
-	case *api.PlaceOrderRequest:
-		msgId = PLACE_ORDER
-	case *api.CancelOrderRequest:
-		msgId = CANCEL_ORDER
-	case *api.GlobalCancelRequest:
-		msgId = REQ_GLOBAL_CANCEL
-	case *api.OpenOrdersRequest:
-		msgId = REQ_OPEN_ORDERS
-	case *api.AllOpenOrdersRequest:
-		msgId = REQ_ALL_OPEN_ORDERS
-	case *api.ExecutionRequest:
-		msgId = REQ_EXECUTIONS
-	default:
-		return fmt.Errorf("'%T' is not implemented", t)
+	t := reflect.TypeOf(m)
+	msgId, ok := msgIdMap[t]
+	if !ok {
+		return fmt.Errorf("'%T' is not implemented", m)
 	}
 	msgId += PROTOBUF_MSG_ID
 	msgBytes, err := proto.Marshal(m)
