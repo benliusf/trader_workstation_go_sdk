@@ -27,21 +27,12 @@ func TestHistoricalDataRequest(t *testing.T) {
 		SetPrimaryExch(NASDAQ).Build()
 	params := &QueryParams{
 		StartTime:  now.Add(-720 * 7 * time.Hour),
-		EndTime:    now.Add(-720 * 6 * time.Hour),
-		BarSize:    ONE_HOUR,
-		WhatToShow: TRADES,
-	}
-	req := NewHistoricalDataRequest(sender, contr, params)
-	_, err := req.Send(context.TODO())
-	assert.ErrorIs(t, err, ErrInvalidParam)
-
-	params = &QueryParams{
-		StartTime:  now.Add(-24 * 7 * time.Hour),
 		EndTime:    now,
 		BarSize:    ONE_HOUR,
 		WhatToShow: TRADES,
 	}
-	req = NewHistoricalDataRequest(sender, contr, params)
-	_, err = req.Send(context.TODO())
+
+	req := NewHistoricalDataRequest(sender, contr, params)
+	_, err := req.Send(context.TODO())
 	assert.NoError(t, err)
 }

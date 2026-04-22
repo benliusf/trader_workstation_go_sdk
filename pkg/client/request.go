@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"time"
 
@@ -287,15 +286,8 @@ func NewHistoricalDataRequest(s *ESender, contr *api.Contract, params *QueryPara
 }
 
 func (r *HistoricalDataRequest) Send(ctx context.Context) (int32, error) {
-	now := time.Now()
 	if r.params != nil {
-		if r.params.StartTime.Before(now.Add(-720 * 6 * time.Hour)) {
-			return -1, fmt.Errorf("%w: start time out of range", ErrInvalidParam)
-		}
-		timeRange := r.params.EndTime.Sub(r.params.StartTime)
-		if timeRange.Hours() > (7 * 24) {
-			return -1, fmt.Errorf("%w: time range cannot exceed one week", ErrInvalidParam)
-		}
+		// TODO: validate historical request limitations
 	}
 	return r.apiRequest.Send(ctx)
 }

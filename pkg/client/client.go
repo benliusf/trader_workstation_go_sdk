@@ -10,12 +10,10 @@ import (
 )
 
 type TWSConfig struct {
-	ClientId     int32
-	Host         string
-	Port         string
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
-	Privileges   Role
+	ClientId                  int32
+	Host, Port                string
+	ReadTimeout, WriteTimeout time.Duration
+	Privileges                Role
 }
 
 type TWSClient struct {
