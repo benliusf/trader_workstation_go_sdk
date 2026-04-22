@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -11,6 +12,7 @@ const (
 	SECOND = "S"
 	DAY    = "D"
 	WEEK   = "W"
+	MONTH  = "M"
 )
 
 type Duration struct {
@@ -61,9 +63,21 @@ type QueryParams struct {
 }
 
 func (p *QueryParams) Duration() *Duration {
+	res := &Duration{}
 	diff := p.EndTime.Sub(p.StartTime)
-	return &Duration{
-		N: int(diff.Seconds()),
-		T: SECOND,
+	switch {
+	case diff.Hours() < 24:
+		res.N = int(diff.Seconds())
+		res.T = SECOND
+	case diff.Hours() < 168:
+		res.N = int(math.Ceil(diff.Hours() / 24))
+		res.T = DAY
+	case diff.Hours() < 720:
+		res.N = int(math.Ceil(diff.Hours() / 168))
+		res.T = WEEK
+	default:
+		res.N = int(math.Ceil(diff.Hours() / 720))
+		res.T = MONTH
 	}
+	return res
 }
