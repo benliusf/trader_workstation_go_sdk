@@ -84,6 +84,8 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 		return e.handleTickSize(b, handler)
 	case read.TICK_STRING:
 		return e.handleTickString(b, handler)
+	case read.HEAD_TIMESTAMP:
+		return e.handleHeadtimestamp(b, handler)
 	case read.HISTORICAL_DATA:
 		return e.handleHistoricalData(b, handler)
 	case read.HISTORICAL_DATA_END:
@@ -200,6 +202,14 @@ func (e *EReader) handleTickString(b []byte, handler EHandler) error {
 		return err
 	}
 	return handler.TickString(m)
+}
+
+func (e *EReader) handleHeadtimestamp(b []byte, handler EHandler) error {
+	m := &api.HeadTimestamp{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.HeadTimestamp(m)
 }
 
 func (e *EReader) handleHistoricalData(b []byte, handler EHandler) error {

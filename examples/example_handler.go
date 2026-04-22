@@ -86,6 +86,12 @@ func (h *ExampleHandler) TickString(m *api.TickString) error {
 	return nil
 }
 
+func (h *ExampleHandler) HeadTimestamp(m *api.HeadTimestamp) error {
+	d, _ := protojson.Marshal(m)
+	h.Logger.Info("received head timestamp: %s", d)
+	return nil
+}
+
 func (h *ExampleHandler) HistoricalData(m *api.HistoricalData) error {
 	d, _ := protojson.Marshal(m)
 	h.Logger.Info("received historical data: %s", d)

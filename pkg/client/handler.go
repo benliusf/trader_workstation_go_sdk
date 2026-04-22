@@ -28,6 +28,8 @@ type EHandler interface {
 
 	TickString(m *api.TickString) error
 
+	HeadTimestamp(m *api.HeadTimestamp) error
+
 	HistoricalData(m *api.HistoricalData) error
 
 	HistoricalDataEnd(m *api.HistoricalDataEnd) error

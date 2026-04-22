@@ -257,6 +257,26 @@ func NewMarketDataRequest(s *ESender, contr *api.Contract) *MarketDataRequest {
 	}
 }
 
+// HeadTimestampRequest.pb.go
+
+type HeadTimestampRequest struct {
+	*apiRequest[*api.HeadTimestampRequest]
+}
+
+func NewHeadTimestampRequest(s *ESender, contr *api.Contract, whatToShow DisplayType) *HeadTimestampRequest {
+	return &HeadTimestampRequest{
+		apiRequest: &apiRequest[*api.HeadTimestampRequest]{
+			sender: s,
+			proto: &api.HeadTimestampRequest{
+				Contract:   contr,
+				WhatToShow: strPtr(string(whatToShow)),
+				UseRTH:     boolPtr(true),
+				FormatDate: int32Ptr(2),
+			},
+		},
+	}
+}
+
 // HistoricalDataRequest.proto
 
 type HistoricalDataRequest struct {

@@ -20,6 +20,7 @@ func init() {
 		&api.ContractDataRequest{}:   REQ_CONTRACT_DATA,
 		&api.MarketDataTypeRequest{}: REQ_MARKET_DATA_TYPE,
 		&api.MarketDataRequest{}:     REQ_MKT_DATA,
+		&api.HeadTimestampRequest{}:  REQ_HEAD_TIMESTAMP,
 		&api.HistoricalDataRequest{}: REQ_HISTORICAL_DATA,
 		&api.PositionsRequest{}:      REQ_POSITIONS,
 		&api.PlaceOrderRequest{}:     PLACE_ORDER,
