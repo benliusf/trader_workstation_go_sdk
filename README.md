@@ -64,7 +64,7 @@ if err != nil {
 #### `StartAPI()`
 This is a **required** step before making requests. We must inform the TWS instance to start accepting API calls.
 ```go
-if err := writer.StartAPI(); err != nil {
+if err := writer.StartAPI(10 * time.Second); err != nil {
         panic(err)
 }
 ```
