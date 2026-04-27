@@ -41,7 +41,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := writer.StartAPI(); err != nil {
+	if err := writer.StartAPI(10 * time.Second); err != nil {
 		panic(err)
 	}
 

@@ -50,7 +50,7 @@ func main() {
 		panic(err)
 	}
 	// You must explicitly call this to inform the server that this connection serves API calls.
-	if err := writer.StartAPI(); err != nil {
+	if err := writer.StartAPI(10 * time.Second); err != nil {
 		panic(err)
 	}
 
