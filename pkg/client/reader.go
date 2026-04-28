@@ -64,6 +64,8 @@ func (e *EReader) Process(msg *read.Message, handler EHandler) error {
 	switch id {
 	case read.NEXT_VALID_ID:
 		return e.handleNextValidId(b, handler)
+	case read.MANAGED_ACCTS:
+		return e.handleManagedAccounts(b, handler)
 	case read.ACCOUNT_SUMMARY:
 		return e.handleAccountSummary(b, handler)
 	case read.ACCOUNT_SUMMARY_END:
@@ -122,6 +124,14 @@ func (e *EReader) handleNextValidId(b []byte, handler EHandler) error {
 		status.setReady()
 	}
 	return handler.NextValidId(m)
+}
+
+func (e *EReader) handleManagedAccounts(b []byte, handler EHandler) error {
+	m := &api.ManagedAccounts{}
+	if err := deserialize(m, b); err != nil {
+		return err
+	}
+	return handler.ManagedAccounts(m)
 }
 
 func (e *EReader) handleAccountSummary(b []byte, handler EHandler) error {

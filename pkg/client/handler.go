@@ -8,6 +8,8 @@ import (
 type EHandler interface {
 	NextValidId(m *api.NextValidId) error
 
+	ManagedAccounts(m *api.ManagedAccounts) error
+
 	AccountSummary(m *api.AccountSummary) error
 
 	AccountSummaryEnd(m *api.AccountSummaryEnd) error

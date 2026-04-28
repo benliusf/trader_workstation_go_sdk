@@ -26,6 +26,12 @@ func (h *ExampleHandler) NextValidId(m *api.NextValidId) error {
 	return nil
 }
 
+func (h *ExampleHandler) ManagedAccounts(m *api.ManagedAccounts) error {
+	d, _ := protojson.Marshal(m)
+	h.Logger.Info("received managed accounts: %s", d)
+	return nil
+}
+
 func (h *ExampleHandler) AccountSummary(m *api.AccountSummary) error {
 	d, _ := protojson.Marshal(m)
 	h.Logger.Info("received account summary data: %s", d)

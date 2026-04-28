@@ -23,6 +23,10 @@ func (h *startHandler) NextValidId(m *api.NextValidId) error {
 	return nil
 }
 
+func (h *startHandler) ManagedAccounts(m *api.ManagedAccounts) error {
+	return nil
+}
+
 func (h *startHandler) AccountSummary(m *api.AccountSummary) error {
 	return nil
 }
