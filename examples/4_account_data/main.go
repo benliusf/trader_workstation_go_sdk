@@ -49,7 +49,6 @@ func main() {
 		if err := reader.Read(ctx, handler); err != nil {
 			logger.Error(fmt.Sprintf("read error: %v", err))
 		}
-		time.Sleep(1 * time.Second)
 	}()
 
 	accountData := client.NewAccountDataRequest(writer, "")

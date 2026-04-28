@@ -84,7 +84,6 @@ go func() {
         if err := reader.Read(ctx, handler); err != nil {
                 fmt.Println(err)
         }
-        time.Sleep(1 * time.Second)
 }()
 ```
 

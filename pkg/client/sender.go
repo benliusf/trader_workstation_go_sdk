@@ -144,7 +144,6 @@ func (e *ESender) StartAPI(timeout time.Duration) error {
 		if err := reader.Read(ctx, handler); err != nil {
 			e.logger.Debug(fmt.Sprintf("start api read error: %v", err))
 		}
-		time.Sleep(10 * time.Millisecond)
 	}()
 
 	req := &api.StartApiRequest{
