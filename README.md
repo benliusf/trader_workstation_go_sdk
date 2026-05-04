@@ -93,17 +93,9 @@ https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#requesting-a
 // Create the API request
 accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{})
 
-// It is common for the first request to fail because the server is not ready to accept API calls
-// In this example, we enclose Send() with a retry loop
-for {
-        if reqId, err := accountSummary.Send(ctx); err != nil {
-                if errors.Is(err, client.ErrClientNotReady) {
-                        time.Sleep(1 * time.Second)
-                        continue
-                }
-                panic(err)
-        }
-        break
+// Call Send()
+if reqId, err := accountSummary.Send(ctx); err != nil {
+        panic(err)
 }
 ```
 
