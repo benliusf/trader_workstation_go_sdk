@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -110,22 +109,7 @@ func main() {
 		SetPrimaryExch(client.NASDAQ).Build()
 
 	aaplTicker := client.NewHistoricalDataRequest(writer, contr, params)
-	var send func() (int32, error) = func() (int32, error) {
-		for {
-			reqId, err := aaplTicker.Send(ctx)
-			if err != nil {
-				if errors.Is(err, client.ErrClientNotReady) {
-					logger.Warn("client not ready, retrying")
-					time.Sleep(1 * time.Second)
-					continue
-				}
-				return -1, err
-			}
-			return reqId, nil
-		}
-	}
-
-	reqId, err := send()
+	reqId, err := aaplTicker.Send(ctx)
 	if err != nil {
 		panic(err)
 	}

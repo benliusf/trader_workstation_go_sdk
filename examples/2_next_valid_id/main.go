@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -62,19 +61,10 @@ func main() {
 		}
 	}()
 
-	// Make and send request for NextValidId.
-	// The send() is inside a retry loop until the server is ready to accept API calls.
+	// Send request for NextValidId.
 	nextValidId := client.NewNextValidIdRequest(writer)
-	for {
-		if err := nextValidId.Send(ctx); err != nil {
-			if errors.Is(err, client.ErrClientNotReady) {
-				logger.Warn("client not ready, retrying")
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			panic(err)
-		}
-		break
+	if err := nextValidId.Send(ctx); err != nil {
+		panic(err)
 	}
 
 	time.Sleep(5 * time.Second)

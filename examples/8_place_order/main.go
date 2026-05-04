@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -88,16 +87,8 @@ func main() {
 	accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{
 		client.AccountType,
 	})
-	for {
-		if _, err := accountSummary.Send(ctx); err != nil {
-			if errors.Is(err, client.ErrClientNotReady) {
-				logger.Warn("client not ready, retrying")
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			panic(err)
-		}
-		break
+	if _, err := accountSummary.Send(ctx); err != nil {
+		panic(err)
 	}
 
 	// Wait for account data response and assert it's a paper trading account.

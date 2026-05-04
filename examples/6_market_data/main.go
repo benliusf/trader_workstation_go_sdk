@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -69,22 +68,14 @@ func main() {
 			SetSecType(client.STOCK).
 			SetExchange(client.SMART).
 			SetPrimaryExch(client.NASDAQ).Build())
-	for {
-		if err := marketLevel.Send(ctx); err != nil {
-			if errors.Is(err, client.ErrClientNotReady) {
-				logger.Warn("client not ready, retrying")
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			panic(err)
-		}
-		if _, err := googTicker.Send(ctx); err != nil {
-			panic(err)
-		}
-		if _, err := nvdaTicker.Send(ctx); err != nil {
-			panic(err)
-		}
-		break
+	if err := marketLevel.Send(ctx); err != nil {
+		panic(err)
+	}
+	if _, err := googTicker.Send(ctx); err != nil {
+		panic(err)
+	}
+	if _, err := nvdaTicker.Send(ctx); err != nil {
+		panic(err)
 	}
 
 	time.Sleep(5 * time.Second)

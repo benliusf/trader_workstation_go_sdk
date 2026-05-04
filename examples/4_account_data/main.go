@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -52,16 +51,8 @@ func main() {
 	}()
 
 	accountData := client.NewAccountDataRequest(writer, "")
-	for {
-		if err := accountData.Send(ctx); err != nil {
-			if errors.Is(err, client.ErrClientNotReady) {
-				logger.Warn("client not ready, retrying")
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			panic(err)
-		}
-		break
+	if err := accountData.Send(ctx); err != nil {
+		panic(err)
 	}
 
 	time.Sleep(5 * time.Second)

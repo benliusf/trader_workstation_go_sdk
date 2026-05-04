@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -57,16 +56,8 @@ func main() {
 		SetExchange(client.SMART).
 		SetPrimaryExch(client.NASDAQ)
 	contract := client.NewContractDataRequest(writer, bd.Build())
-	for {
-		if _, err := contract.Send(ctx); err != nil {
-			if errors.Is(err, client.ErrClientNotReady) {
-				logger.Warn("client not ready, retrying")
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			panic(err)
-		}
-		break
+	if _, err := contract.Send(ctx); err != nil {
+		panic(err)
 	}
 
 	time.Sleep(5 * time.Second)
