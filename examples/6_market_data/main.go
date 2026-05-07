@@ -53,6 +53,9 @@ func main() {
 	// Tell the server that we're requesting DELAYED data -
 	//	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#delayed-market-data
 	marketLevel := client.NewMarketDataTypeRequest(writer, client.MARKET_DATA_DELAYED)
+	if err := marketLevel.Send(ctx); err != nil {
+		panic(err)
+	}
 
 	// Request for `GOOG` stock symbol
 	googTicker := client.NewMarketDataRequest(writer,
@@ -68,9 +71,6 @@ func main() {
 			SetSecType(client.STOCK).
 			SetExchange(client.SMART).
 			SetPrimaryExch(client.NASDAQ).Build())
-	if err := marketLevel.Send(ctx); err != nil {
-		panic(err)
-	}
 	if _, err := googTicker.Send(ctx); err != nil {
 		panic(err)
 	}

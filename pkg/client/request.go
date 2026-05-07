@@ -297,7 +297,7 @@ func NewHistoricalDataRequest(s *ESender, contr *api.Contract, params *QueryPara
 				BarSizeSetting: strPtr(string(params.BarSize)),
 				WhatToShow:     strPtr(string(params.WhatToShow)),
 				UseRTH:         boolPtr(true),
-				FormatDate:     int32Ptr(1),
+				FormatDate:     int32Ptr(2),
 				KeepUpToDate:   boolPtr(false),
 			},
 		},

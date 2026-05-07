@@ -17,15 +17,11 @@ type TWSConfig struct {
 }
 
 type TWSClient struct {
-	conf TWSConfig
-
-	logger log.Logger
-
-	conn *net.TWSConn
-
+	conf          TWSConfig
+	conn          *net.TWSConn
 	serverVersion int32
-
-	status *clientState
+	status        *clientState
+	logger        log.Logger
 }
 
 func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {

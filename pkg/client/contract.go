@@ -29,6 +29,7 @@ const (
 const (
 	NASDAQ PrimaryExchange = "NASDAQ"
 	NYSE   PrimaryExchange = "NYSE"
+	AMEX   PrimaryExchange = "AMEX"
 )
 
 const (
