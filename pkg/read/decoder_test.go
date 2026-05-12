@@ -13,27 +13,13 @@ func TestReadStr(t *testing.T) {
 		length   int
 		expected string
 	}{
-		{
-			body:     []byte("hello world"),
-			start:    0,
-			length:   5,
-			expected: "hello",
-		},
-		{
-			body:     []byte("hello\000world"),
-			start:    0,
-			length:   -1,
-			expected: "hello",
-		},
-		{
-			body:     []byte("hello world"),
-			start:    0,
-			length:   -1,
-			expected: "hello world",
-		},
+		{body: []byte("hello world"), start: 0, length: 5, expected: "hello"},
+		{body: []byte("hello\000world"), start: 0, length: -1, expected: "hello"},
+		{body: []byte("hello world"), start: 0, length: -1, expected: "hello world"},
 	}
 	for _, tt := range tests {
-		actual, _ := readStr(tt.body, tt.start, tt.length)
+		actual, err := readStr(tt.body, tt.start, tt.length)
+		assert.NoError(t, err)
 		assert.Equal(t, tt.expected, actual)
 	}
 }
@@ -44,24 +30,13 @@ func TestReadInt32(t *testing.T) {
 		start    int
 		expected int32
 	}{
-		{
-			body:     []byte{0, 0, 0, 222},
-			start:    0,
-			expected: 222,
-		},
-		{
-			body:     []byte{1, 255, 1, 255},
-			start:    0,
-			expected: 33489407,
-		},
-		{
-			body:     []byte{1, 255, 1, 255, 0, 0, 0, 222},
-			start:    4,
-			expected: 222,
-		},
+		{body: []byte{0, 0, 0, 222}, start: 0, expected: 222},
+		{body: []byte{1, 255, 1, 255}, start: 0, expected: 33489407},
+		{body: []byte{1, 255, 1, 255, 0, 0, 0, 222}, start: 4, expected: 222},
 	}
 	for _, tt := range tests {
-		actual, _ := readInt32(tt.body, tt.start)
+		actual, err := readInt32(tt.body, tt.start)
+		assert.NoError(t, err)
 		assert.Equal(t, tt.expected, actual)
 	}
 }

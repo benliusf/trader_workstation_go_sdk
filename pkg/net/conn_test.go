@@ -23,17 +23,13 @@ func TestTWSConn(t *testing.T) {
 	expected = append(expected, []byte(verHeader)...)
 
 	done := make(chan struct{})
-
 	go func() {
 		defer func() {
 			done <- struct{}{}
 		}()
 		buf := make([]byte, 1024)
 		n, err := mockServer.Read(buf)
-		if err != nil {
-			t.Error(err)
-			return
-		}
+		assert.NoError(t, err)
 		assert.Equal(t, expected, buf[:n])
 	}()
 

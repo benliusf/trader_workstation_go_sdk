@@ -46,27 +46,15 @@ func TestReadInt32FromStr(t *testing.T) {
 		body     []byte
 		expected int32
 	}{
-		{
-			body:     []byte("222"),
-			expected: 222,
-		},
-		{
-			body:     []byte("222\000123"),
-			expected: 222,
-		},
-		{
-			body:     []byte(fmt.Sprintf("%d", math.MaxInt32)),
-			expected: math.MaxInt32,
-		},
+		{body: []byte("222"), expected: 222},
+		{body: []byte("222\000123"), expected: 222},
+		{body: []byte(fmt.Sprintf("%d", math.MaxInt32)), expected: math.MaxInt32},
 	}
 	for _, tt := range tests {
-		msg := &Message{
-			body: tt.body,
-		}
+		msg, err := MessageFromBytes(tt.body)
+		assert.NoError(t, err)
 		actual, err := msg.ReadInt32FromStr()
-		if err != nil {
-			t.Fatal(err)
-		}
+		assert.NoError(t, err)
 		assert.Equal(t, tt.expected, actual)
 	}
 }

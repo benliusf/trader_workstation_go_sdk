@@ -11,15 +11,13 @@ import (
 const (
 	API_HEADER = "API\000"
 
-	MIN_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
-	MAX_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
+	MIN_VER, MAX_VER = MIN_SERVER_VER_FRACTIONAL_LAST_SIZE, MIN_SERVER_VER_FRACTIONAL_LAST_SIZE
 )
 
 var verHeader string = fmt.Sprintf("%v..%v", MIN_VER, MAX_VER)
 
 type TWSConn struct {
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	ReadTimeout, WriteTimeout time.Duration
 
 	conn net.Conn
 }
