@@ -44,11 +44,11 @@ func main() {
 	// Write permissions are required for placing orders.
 	rw := client.ReadAndWrite()
 	conf := client.TWSConfig{
-		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
+		ClientId:     0,
 		Privileges:   rw,
 	}
 	logger := examples.NewExampleLogger()

@@ -1,46 +1,54 @@
 package send
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 )
 
-const int32BytesLength int32 = 4
-
 type builder struct {
-	buf *bytes.Buffer
+	buf []byte
 
 	msgId    int32
 	msgBytes []byte
 }
 
-func newBuilder() *builder {
+func newBuilder(msgSize int) *builder {
+	size := msgSize + 8
 	return &builder{
-		buf: bytes.NewBuffer(nil),
+		buf: make([]byte, size, size),
 	}
 }
 
-func (b *builder) build() ([]byte, error) {
-	msgLength := int32BytesLength + int32(len(b.msgBytes))
-	if err := binary.Write(b.buf, binary.BigEndian, msgLength); err != nil {
-		return nil, fmt.Errorf("failed to write msgLength=%d: %w", msgLength, err)
-	}
-	if err := binary.Write(b.buf, binary.BigEndian, b.msgId); err != nil {
-		return nil, fmt.Errorf("failed to write msgId=%d: %w", b.msgId, err)
-	}
-	if _, err := b.buf.Write(b.msgBytes); err != nil {
-		return nil, fmt.Errorf("failed to write body: %w", err)
-	}
-	return b.buf.Bytes(), nil
+func (b *builder) bytes() []byte {
+	return b.buf
 }
 
-func (b *builder) withMsgId(v int32) *builder {
+func (b *builder) writeMsgId(v int32) error {
+	if len(b.buf) < 8 {
+		return fmt.Errorf("bad buffer size")
+	}
+	tmp := int32Bytes(v)
+	copy(b.buf[int32BytesLength:8], tmp)
 	b.msgId = v
-	return b
+	return nil
 }
 
-func (b *builder) withMsgBytes(v []byte) *builder {
+func (b *builder) writeMsgLength(v int32) error {
+	if len(b.buf) < 4 {
+		return fmt.Errorf("bad buffer size")
+	}
+	tmp := int32Bytes(v)
+	copy(b.buf[0:4], tmp)
+	return nil
+}
+
+func (b *builder) writeMsgBytes(v []byte) error {
+	if len(b.buf) < len(v)+8 {
+		return fmt.Errorf("bad buffer size")
+	}
+	if err := b.writeMsgLength(int32(int32BytesLength + len(v))); err != nil {
+		return err
+	}
+	copy(b.buf[8:], v)
 	b.msgBytes = v
-	return b
+	return nil
 }

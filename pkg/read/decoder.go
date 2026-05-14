@@ -13,11 +13,9 @@ func readStr(b []byte, start int, length int) (string, error) {
 	var i int = start
 	for ; i < len(b); i++ {
 		// check for null byte (zero value)
-		if b[i] == 0 {
-			break
-		}
-		if length > 0 &&
-			(i-start) >= length {
+		if b[i] == 0 ||
+			(length > 0 &&
+				(i-start) >= length) {
 			break
 		}
 	}

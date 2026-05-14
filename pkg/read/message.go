@@ -3,11 +3,9 @@ package read
 import (
 	"io"
 	"strconv"
-	"sync"
 )
 
 type Message struct {
-	mu   sync.Mutex
 	body []byte
 	idx  int
 	id   int32
@@ -32,9 +30,6 @@ func (m *Message) updateIndex(incr int) {
 }
 
 func (m *Message) ReadBytes() ([]byte, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	b := m.body[m.idx:]
 	m.updateIndex(len(b))
 	return b, nil
@@ -53,9 +48,6 @@ func (m *Message) ReadMsgId() (int32, error) {
 }
 
 func (m *Message) ReadStr() (string, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	if m.idx >= len(m.body) {
 		return "", io.EOF
 	}
@@ -68,9 +60,6 @@ func (m *Message) ReadStr() (string, error) {
 }
 
 func (m *Message) ReadInt32() (int32, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	if m.idx >= len(m.body) {
 		return -1, io.EOF
 	}
@@ -83,9 +72,6 @@ func (m *Message) ReadInt32() (int32, error) {
 }
 
 func (m *Message) ReadInt32FromStr() (int32, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	if m.idx >= len(m.body) {
 		return -1, io.EOF
 	}

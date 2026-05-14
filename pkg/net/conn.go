@@ -67,16 +67,14 @@ func (c *TWSConn) Close() error {
 
 func (c *TWSConn) Read(buf []byte) (int, error) {
 	if c.ReadTimeout > 0 {
-		deadline := time.Now().Add(c.ReadTimeout)
-		c.conn.SetReadDeadline(deadline)
+		c.conn.SetReadDeadline(time.Now().Add(c.ReadTimeout))
 	}
 	return c.conn.Read(buf)
 }
 
 func (c *TWSConn) Write(b []byte) (int, error) {
 	if c.WriteTimeout > 0 {
-		deadline := time.Now().Add(c.WriteTimeout)
-		c.conn.SetWriteDeadline(deadline)
+		c.conn.SetWriteDeadline(time.Now().Add(c.WriteTimeout))
 	}
 	return c.conn.Write(b)
 }

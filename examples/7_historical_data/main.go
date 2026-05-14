@@ -57,11 +57,11 @@ func (h *thisHandler) HistoricalDataEnd(m *api.HistoricalDataEnd) error {
 
 func main() {
 	conf := client.TWSConfig{
-		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
+		ClientId:     0,
 	}
 	logger := examples.NewExampleLogger()
 	cl, err := client.NewClient(conf, logger)
@@ -125,9 +125,9 @@ func main() {
 
 	// Print historical records -
 	// ...
-	// 2026/04/22 16:27:53 [INFO] {"date":"20260422 13:00:00 US/Eastern","open":272.48,"high":273.72,"low":272.47,"close":273.47,"volume":"2221787","WAP":"273.23","barCount":11840}
-	// 2026/04/22 16:27:53 [INFO] {"date":"20260422 14:00:00 US/Eastern","open":273.47,"high":273.74,"low":272.1,"close":272.42,"volume":"1683503","WAP":"272.834","barCount":9310}
-	// 2026/04/22 16:27:53 [INFO] {"date":"20260422 15:00:00 US/Eastern","open":272.43,"high":273.26,"low":272.26,"close":273.19,"volume":"4224526","WAP":"272.85","barCount":23745}
+	// 2026/05/13 20:05:52 [INFO] {"date":"1778684400", "open":296.51, "high":298.01, "low":296.25, "close":296.94, "volume":"3103085", "WAP":"297.123", "barCount":26442}
+	// 2026/05/13 20:05:52 [INFO] {"date":"1778688000", "open":296.93, "high":299.42, "low":296.78, "close":299.15, "volume":"4144633", "WAP":"298.52", "barCount":34107}
+	// 2026/05/13 20:05:52 [INFO] {"date":"1778691600", "open":299.16, "high":300.92, "low":299.12, "close":300.17, "volume":"5893813", "WAP":"300.051", "barCount":40970}
 	// ...
 	for _, d := range handler.data {
 		for _, r := range d.HistoricalDataBars {

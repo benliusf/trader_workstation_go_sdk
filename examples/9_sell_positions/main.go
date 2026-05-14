@@ -17,7 +17,7 @@ import (
 // An example to demonstrate an API call to Positions -
 //	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#positions
 //
-// In this example, we get all the current positions in the account and create "SELL" orders for all the positions.
+// In this example, we get all the current positions in the account and create "SELL" orders for every position.
 
 type thisHandler struct {
 	examples.ExampleHandler
@@ -52,11 +52,11 @@ func (h *thisHandler) PositionEnd(m *api.PositionEnd) error {
 
 func main() {
 	conf := client.TWSConfig{
-		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		ClientId:     0,
 		Privileges:   client.ReadAndWrite(),
 	}
 	logger := examples.NewExampleLogger()

@@ -9,15 +9,13 @@ import (
 
 func Next(conn *net.TWSConn) (*Message, error) {
 	buf := make([]byte, 4)
-	_, err := conn.Read(buf)
-	if err != nil {
+	if _, err := conn.Read(buf); err != nil {
 		return nil, err
 	}
 	tempInt := binary.BigEndian.Uint32(buf)
 	lengthHeader := int32(tempInt)
 	buf = make([]byte, lengthHeader)
-	_, err = conn.Read(buf)
-	if err != nil {
+	if _, err := conn.Read(buf); err != nil {
 		return nil, err
 	}
 	return MessageFromBytes(buf)

@@ -26,7 +26,7 @@ type EReader struct {
 
 func NewReader(cl *TWSClient) (*EReader, error) {
 	if cl == nil {
-		return nil, fmt.Errorf("nil TWSClient")
+		return nil, fmt.Errorf("nil client")
 	}
 	return &EReader{
 		cl, cl.logger,
@@ -40,13 +40,12 @@ func (e *EReader) Read(ctx context.Context, handler EHandler) error {
 			e.logger.Debug("reader has stopped")
 			return nil
 		default:
-			msg, err := read.Next(e.twsClient.conn)
-			if err != nil {
+			if msg, err := read.Next(e.twsClient.conn); err != nil {
 				e.logger.Error("failed to read next message: %v", err)
-				continue
-			}
-			if err := e.Process(msg, handler); err != nil {
-				e.logger.Error("failed to process message: %v", err)
+			} else {
+				if err := e.Process(msg, handler); err != nil {
+					e.logger.Error("failed to process message: %v", err)
+				}
 			}
 		}
 	}

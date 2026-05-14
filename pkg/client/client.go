@@ -10,9 +10,9 @@ import (
 )
 
 type TWSConfig struct {
-	ClientId                  int32
 	Host, Port                string
 	ReadTimeout, WriteTimeout time.Duration
+	ClientId                  int32
 	Privileges                Role
 }
 
@@ -26,10 +26,10 @@ type TWSClient struct {
 
 func NewClient(conf TWSConfig, logger log.Logger) (*TWSClient, error) {
 	if conf.Host == "" {
-		return nil, fmt.Errorf("host not defined!")
+		return nil, fmt.Errorf("host not defined")
 	}
 	if conf.Port == "" {
-		return nil, fmt.Errorf("port not defined!")
+		return nil, fmt.Errorf("port not defined")
 	}
 	cl := &TWSClient{
 		conf:   conf,
@@ -80,9 +80,9 @@ func (c *TWSClient) Disconnect() (err error) {
 	defer func() {
 		if err != nil {
 			c.logger.Error("disconnect error: %v", err)
-			return
+		} else {
+			c.logger.Info("client=%d disconnected", c.conf.ClientId)
 		}
-		c.logger.Info("client=%d disconnected", c.conf.ClientId)
 	}()
 	if c != nil &&
 		c.conn != nil {

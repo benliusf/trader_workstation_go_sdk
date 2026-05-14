@@ -122,7 +122,7 @@ type ESender struct {
 
 func NewSender(cl *TWSClient) (*ESender, error) {
 	if cl == nil {
-		return nil, fmt.Errorf("nil TWSClient")
+		return nil, fmt.Errorf("nil client")
 	}
 	return &ESender{
 		cl, cl.logger,

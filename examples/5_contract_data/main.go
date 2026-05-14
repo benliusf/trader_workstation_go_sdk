@@ -14,11 +14,11 @@ import (
 //	https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#contracts
 func main() {
 	conf := client.TWSConfig{
-		ClientId:     0,
 		Host:         "localhost",
 		Port:         "7497",
-		ReadTimeout:  2 * time.Second,
-		WriteTimeout: 2 * time.Second,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
+		ClientId:     0,
 	}
 	logger := examples.NewExampleLogger()
 	cl, err := client.NewClient(conf, logger)

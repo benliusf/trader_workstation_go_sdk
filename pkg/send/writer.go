@@ -49,13 +49,14 @@ func Write(conn *net.TWSConn, m proto.Message) error {
 	if err != nil {
 		return err
 	}
-	bd := newBuilder()
-	bd.withMsgId(msgId).withMsgBytes(msgBytes)
-	b, err := bd.build()
-	if err != nil {
-		return err
+	bd := newBuilder(len(msgBytes))
+	if err := bd.writeMsgId(msgId); err != nil {
+		return fmt.Errorf("failed to write msgId=%d: %w", msgId, err)
 	}
-	if _, err := conn.Write(b); err != nil {
+	if err := bd.writeMsgBytes(msgBytes); err != nil {
+		return fmt.Errorf("failed to write msgBytes: %w", err)
+	}
+	if _, err := conn.Write(bd.bytes()); err != nil {
 		return err
 	}
 	return nil

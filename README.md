@@ -38,11 +38,11 @@ Let's walk through making our first API request.
 
 ```go
 conf := client.TWSConfig{
-        ClientID:     0,                // Client id of connection
         Host:         "localhost",
         Port:         "7497",           // Default paper trading port
         ReadTimeout:  5 * time.Second,
         WriteTimeout: 5 * time.Second,
+        ClientID:     0,                // Client id of connection
 }
 cl, err := client.NewClient(conf, nil)  // TWSClient
 if err != nil {
