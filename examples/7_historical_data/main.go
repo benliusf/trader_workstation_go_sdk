@@ -22,7 +22,7 @@ type thisHandler struct {
 	examples.ExampleHandler
 
 	reqId int32
-	data  []*api.HistoricalData
+	data  *api.HistoricalData
 
 	done context.CancelFunc
 }
@@ -33,7 +33,6 @@ func newThisHandler(done context.CancelFunc, logger log.Logger) *thisHandler {
 			Logger: logger,
 		},
 		done: done,
-		data: []*api.HistoricalData{},
 	}
 }
 
@@ -43,7 +42,7 @@ func (h *thisHandler) setReqId(reqId int32) {
 
 func (h *thisHandler) HistoricalData(m *api.HistoricalData) error {
 	if *m.ReqId == h.reqId {
-		h.data = append(h.data, m)
+		h.data = m
 	}
 	return nil
 }
@@ -129,10 +128,8 @@ func main() {
 	// 2026/05/13 20:05:52 [INFO] {"date":"1778688000", "open":296.93, "high":299.42, "low":296.78, "close":299.15, "volume":"4144633", "WAP":"298.52", "barCount":34107}
 	// 2026/05/13 20:05:52 [INFO] {"date":"1778691600", "open":299.16, "high":300.92, "low":299.12, "close":300.17, "volume":"5893813", "WAP":"300.051", "barCount":40970}
 	// ...
-	for _, d := range handler.data {
-		for _, r := range d.HistoricalDataBars {
-			b, _ := protojson.Marshal(r)
-			logger.Info("%s", b)
-		}
+	for _, r := range handler.data.GetHistoricalDataBars() {
+		b, _ := protojson.Marshal(r)
+		logger.Info("%s", b)
 	}
 }

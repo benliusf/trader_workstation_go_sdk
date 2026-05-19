@@ -1,6 +1,8 @@
 package simple
 
 import (
+	"fmt"
+
 	api "github.com/benliusf/trader_workstation_go_sdk/api/v104401"
 
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/read"
@@ -8,16 +10,23 @@ import (
 
 type simpleHandler struct {
 	done chan struct{}
+	errs chan error
 
 	reqId int32
 
-	nextValidId    *api.NextValidId
-	accountSummary []*api.AccountSummary
-	accountValue   []*api.AccountValue
+	nextValidId      *api.NextValidId
+	accountSummary   []*api.AccountSummary
+	accountValue     []*api.AccountValue
+	contractData     *api.ContractData
+	headTimestamp    *api.HeadTimestamp
+	historicalData   *api.HistoricalData
+	position         []*api.Position
+	openOrder        []*api.OpenOrder
+	executionDetails *api.ExecutionDetails
 }
 
-func newSimpleHandler(done chan struct{}, reqId int32) *simpleHandler {
-	return &simpleHandler{done: done, reqId: reqId}
+func newSimpleHandler(reqId int32) *simpleHandler {
+	return &simpleHandler{done: make(chan struct{}), errs: make(chan error), reqId: reqId}
 }
 
 func (h *simpleHandler) NextValidId(m *api.NextValidId) error {
@@ -31,14 +40,14 @@ func (h *simpleHandler) ManagedAccounts(m *api.ManagedAccounts) error {
 }
 
 func (h *simpleHandler) AccountSummary(m *api.AccountSummary) error {
-	if *m.ReqId == h.reqId {
+	if m.GetReqId() == h.reqId {
 		h.accountSummary = append(h.accountSummary, m)
 	}
 	return nil
 }
 
 func (h *simpleHandler) AccountSummaryEnd(m *api.AccountSummaryEnd) error {
-	if *m.ReqId == h.reqId {
+	if m.GetReqId() == h.reqId {
 		h.done <- struct{}{}
 	}
 	return nil
@@ -59,6 +68,10 @@ func (h *simpleHandler) AccountDataEnd(m *api.AccountDataEnd) error {
 }
 
 func (h *simpleHandler) ContractData(m *api.ContractData) error {
+	if m.GetReqId() == h.reqId {
+		h.contractData = m
+		h.done <- struct{}{}
+	}
 	return nil
 }
 
@@ -79,10 +92,18 @@ func (h *simpleHandler) TickString(m *api.TickString) error {
 }
 
 func (h *simpleHandler) HeadTimestamp(m *api.HeadTimestamp) error {
+	if m.GetReqId() == h.reqId {
+		h.headTimestamp = m
+		h.done <- struct{}{}
+	}
 	return nil
 }
 
 func (h *simpleHandler) HistoricalData(m *api.HistoricalData) error {
+	if m.GetReqId() == h.reqId {
+		h.historicalData = m
+		h.done <- struct{}{}
+	}
 	return nil
 }
 
@@ -91,18 +112,22 @@ func (h *simpleHandler) HistoricalDataEnd(m *api.HistoricalDataEnd) error {
 }
 
 func (h *simpleHandler) Position(m *api.Position) error {
+	h.position = append(h.position, m)
 	return nil
 }
 
 func (h *simpleHandler) PositionEnd(m *api.PositionEnd) error {
+	h.done <- struct{}{}
 	return nil
 }
 
 func (h *simpleHandler) OpenOrder(m *api.OpenOrder) error {
+	h.openOrder = append(h.openOrder, m)
 	return nil
 }
 
 func (h *simpleHandler) OpenOrdersEnd(m *api.OpenOrdersEnd) error {
+	h.done <- struct{}{}
 	return nil
 }
 
@@ -111,6 +136,10 @@ func (h *simpleHandler) OrderStatus(m *api.OrderStatus) error {
 }
 
 func (h *simpleHandler) ExecutionDetails(m *api.ExecutionDetails) error {
+	if m.GetReqId() == h.reqId {
+		h.executionDetails = m
+		h.done <- struct{}{}
+	}
 	return nil
 }
 
@@ -119,6 +148,10 @@ func (h *simpleHandler) ExecutionDetailsEnd(m *api.ExecutionDetailsEnd) error {
 }
 
 func (h *simpleHandler) ErrorMessage(m *api.ErrorMessage) error {
+	if (m.GetErrorCode() >= 100 && m.GetErrorCode() < 1000) ||
+		(m.GetErrorCode() >= 10000) {
+		h.errs <- fmt.Errorf(m.GetErrorMsg())
+	}
 	return nil
 }
 
