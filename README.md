@@ -126,7 +126,7 @@ The `AccountSummary` response will be printed to stdout using the [example handl
 ...
 ```
 
-#### Stop and TWSClient.Disconnect()
+#### Stop and `TWSClient.Disconnect()`
 ```go
 defer cl.Disconnect()
 done()                  // Call context.Done() to stop reader from processing new data
@@ -168,7 +168,26 @@ if err != nil {
 }
 ```
 
-#### Disconnect()
+#### `Disconnect()`
 ```go
 defer cl.Disconnect()
+```
+
+## Additional Tips
+
+### Logging
+
+To capture debug or other logs, implement the [Logger](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/pkg/log/logger.go) interface and use it during client creation.
+```go
+import (
+	"github.com/benliusf/trader_workstation_go_sdk/examples"
+	...
+)
+
+logger := examples.NewExampleLogger()
+cl, err := simple.NewClient(conf, logger)
+if err != nil {
+        panic(err)
+}
+
 ```
