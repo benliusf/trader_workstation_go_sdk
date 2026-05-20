@@ -32,9 +32,17 @@ TWS must be running locally because the API interacts with your local instance. 
 
 (Please take a look at [Examples](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples) for some working code samples.)
 
-Let's walk through making our first API request.
+There are two client options: **[Traditional](#traditional-client-async-approach)** or **[Simple](#simple-client)**. The **Traditional client** uses the async approach and requires you to implement a response handler. It provides a bit more flexibility and performance if you plan to utilize concurrency.
+
+The **Simple client** is much more straightforward but all requests are synchronous.
+
+Below are code samples for getting started with either client.
+
+### Traditional client (async approach)
 
 #### Establish connection with `TWSClient.Connect()`
+
+[Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/1_connect_to_tws)
 
 ```go
 conf := client.TWSConfig{
@@ -114,4 +122,45 @@ The `AccountSummary` response will be printed to stdout using the [example handl
 ```go
 defer cl.Disconnect()
 done()                  // Call context.Done() to stop reader from processing new data
+```
+
+### Simple client
+
+[Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/simple_client)
+
+#### Establish connection with SimpleClient.Connect(timeout)
+```go
+import (
+	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
+	"github.com/benliusf/trader_workstation_go_sdk/pkg/simple"
+	...
+)
+
+conf := client.TWSConfig{
+        Host:         "localhost",
+        Port:         "7497",
+        ReadTimeout:  5 * time.Second,
+        WriteTimeout: 5 * time.Second,
+        ClientID:     0,
+}
+cl, err := simple.NewClient(conf, nil)
+if err != nil {
+        panic(err)
+}
+if err := cl.Connect(10 * time.Second); err != nil {
+        panic(err)
+}
+```
+
+#### Call TWS API for `AccountSummary` data
+```go
+accountSummary, err := cl.GetAccountSummary(ctx, "", []client.AccountSummaryTag{})
+if err != nil {
+	panic(err)
+}
+```
+
+#### Disconnect()
+```go
+defer cl.Disconnect()
 ```
