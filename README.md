@@ -45,6 +45,10 @@ Below are code samples for getting started with either client.
 [Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/1_connect_to_tws)
 
 ```go
+import (
+	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
+	...
+)
 conf := client.TWSConfig{
         Host:         "localhost",
         Port:         "7497",           // Default paper trading port
@@ -128,7 +132,7 @@ done()                  // Call context.Done() to stop reader from processing ne
 
 [Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/simple_client)
 
-#### Establish connection with SimpleClient.Connect(timeout)
+#### Establish connection with `SimpleClient.Connect(timeout)`
 ```go
 import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
