@@ -42,13 +42,14 @@ Below are code samples for getting started with either client.
 
 #### Establish connection with `TWSClient.Connect()`
 
-[Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/1_connect_to_tws)
+[Code example](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/1_connect_to_tws/main.go)
 
 ```go
 import (
 	"github.com/benliusf/trader_workstation_go_sdk/pkg/client"
 	...
 )
+
 conf := client.TWSConfig{
         Host:         "localhost",
         Port:         "7497",           // Default paper trading port
@@ -100,7 +101,10 @@ go func() {
 ```
 
 #### Call TWS API for `AccountSummary` data
-https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#requesting-account-summary
+
+Doc: https://www.interactivebrokers.com/campus/ibkr-api-page/twsapi-doc/#requesting-account-summary
+
+[Code example](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/3_account_summary/main.go)
 ```go
 // Create the API request
 accountSummary := client.NewAccountSummaryRequest(writer, "", []client.AccountSummaryTag{})
@@ -130,7 +134,7 @@ done()                  // Call context.Done() to stop reader from processing ne
 
 ### Simple client
 
-[Code example](https://github.com/benliusf/trader_workstation_go_sdk/tree/main/examples/simple_client)
+[Code example](https://github.com/benliusf/trader_workstation_go_sdk/blob/main/examples/simple_client/main.go)
 
 #### Establish connection with `SimpleClient.Connect(timeout)`
 ```go
